@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>AI art</name>
+	<author>boriselec</author>
+	<supportedVersions>
+		<li>1.4</li>
+	</supportedVersions>
+	<url>none</url>
+	<packageId>boriselec.ArtAi</packageId>
+	<loadAfter>
+	</loadAfter>
+	<modDependencies>
+	</modDependencies>
+	<description>show AI generated art</description>
+</ModMetaData>
