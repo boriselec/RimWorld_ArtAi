@@ -27,7 +27,7 @@ namespace ArtAi
         public ITab_Art_Generated()
         {
             size = WinSize;
-            labelKey = "View";
+            labelKey = "TabArtView";
         }
 
         protected override void FillTab()

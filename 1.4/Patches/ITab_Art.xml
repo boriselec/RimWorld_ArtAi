@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Patch>
-  <Operation Class="PatchOperationInsert">
+  <Operation Class="PatchOperationAdd">
     <xpath>Defs/ThingDef[@Name='SculptureBase']/inspectorTabs</xpath>
     <value>
       <li>ArtAi.ITab_Art_Generated</li>
