@@ -1,4 +1,5 @@
 using RimWorld;
+using RimWorld.IO;
 using UnityEngine;
 using Verse;
 
@@ -67,7 +68,12 @@ namespace ArtAi
                 return cachedImageGenerated;
             }
             
-            Texture2D texture2D = ContentFinder<Texture2D>.Get("TODO", false);
+            VirtualDirectory virtualDirectory = AbstractFilesystem.GetDirectory("/Users/boris/Downloads/");
+            string expectedFileName = cachedImageDescription.GetHashCode() + ".png";
+            VirtualFile virtualFile = virtualDirectory.GetFile(expectedFileName);
+
+            Texture2D texture2D = ModContentLoader<Texture2D>.LoadItem(virtualFile).contentItem;
+            
             if (texture2D != null)
             {
                 cachedImageGenerated = texture2D;
