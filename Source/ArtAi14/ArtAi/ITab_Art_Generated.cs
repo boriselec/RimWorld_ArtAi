@@ -9,6 +9,7 @@ namespace ArtAi
         private static string cachedImageDescription;
         private static CompArt cachedImageSource;
         private static TaleReference cachedTaleRef;
+        private static Texture2D cachedImageGenerated;
         private static readonly Vector2 WinSize = new Vector2(400f, 300f);
 
         private CompArt SelectedCompArt
@@ -42,14 +43,36 @@ namespace ArtAi
                 cachedImageDescription = SelectedCompArt.GenerateImageDescription();
                 cachedImageSource = SelectedCompArt;
                 cachedTaleRef = SelectedCompArt.TaleRef;
-
-                cachedImageDescription = "TODO";
+                cachedImageGenerated = null;
             }
 
             Rect rect3 = rect1;
             rect3.yMin += 35f;
-            Text.Font = GameFont.Small;
-            Widgets.Label(rect3, cachedImageDescription);
+            Texture2D texture2D = GetGeneratedTexture();
+            if (texture2D != null)
+            {
+                GUI.DrawTexture(rect3, texture2D, ScaleMode.ScaleToFit);
+            }
+            else
+            {
+                Text.Font = GameFont.Small;
+                Widgets.Label(rect3, "Loading...");
+            }
+        }
+
+        private static Texture2D GetGeneratedTexture()
+        {
+            if (cachedImageGenerated != null)
+            {
+                return cachedImageGenerated;
+            }
+            
+            Texture2D texture2D = ContentFinder<Texture2D>.Get("TODO", false);
+            if (texture2D != null)
+            {
+                cachedImageGenerated = texture2D;
+            }
+            return texture2D;
         }
     }
 }
