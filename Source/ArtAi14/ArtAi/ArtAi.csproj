@@ -57,8 +57,15 @@
       <HintPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="data\Description.cs" />
+    <Compile Include="data\GeneratedImage.cs" />
+    <Compile Include="Generator.cs" />
     <Compile Include="ITab_Art_Generated.cs" />
   </ItemGroup>
   <ItemGroup>
