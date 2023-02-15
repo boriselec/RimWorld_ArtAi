@@ -1,5 +1,6 @@
+using System.Collections.Generic;
+using ArtAi.data;
 using RimWorld;
-using RimWorld.IO;
 using UnityEngine;
 using Verse;
 
@@ -7,11 +8,9 @@ namespace ArtAi
 {
     public class ITab_Art_Generated : ITab
     {
-        private static string cachedImageDescription;
-        private static CompArt cachedImageSource;
-        private static TaleReference cachedTaleRef;
-        private static Texture2D cachedImageGenerated;
         private static readonly Vector2 WinSize = new Vector2(400f, 300f);
+        private readonly Dictionary<Description, GeneratedImage> _images
+            = new Dictionary<Description, GeneratedImage>();
 
         private CompArt SelectedCompArt
         {
@@ -34,51 +33,47 @@ namespace ArtAi
 
         protected override void FillTab()
         {
+            var rect1 = DrawHeader();
+
+            GeneratedImage image;
+            Description description = new Description(SelectedCompArt);
+            if (!_images.ContainsKey(description) || (image = _images[description]).NeedUpdate())
+            {
+                image = Generator.Generate(description);
+                _images[description] = image;
+            }
+
+            Draw(rect1, image);
+        }
+
+        private Rect DrawHeader()
+        {
             Rect rect1;
             Rect rect2 = rect1 = new Rect(0.0f, 0.0f, WinSize.x, WinSize.y).ContractedBy(10f);
             Text.Font = GameFont.Medium;
             Widgets.Label(rect2, SelectedCompArt.Title.Truncate(rect2.width));
-            if (cachedImageSource != SelectedCompArt ||
-                cachedTaleRef != SelectedCompArt.TaleRef)
-            {
-                cachedImageDescription = SelectedCompArt.GenerateImageDescription();
-                cachedImageSource = SelectedCompArt;
-                cachedTaleRef = SelectedCompArt.TaleRef;
-                cachedImageGenerated = null;
-            }
-
-            Rect rect3 = rect1;
-            rect3.yMin += 35f;
-            Texture2D texture2D = GetGeneratedTexture();
-            if (texture2D != null)
-            {
-                GUI.DrawTexture(rect3, texture2D, ScaleMode.ScaleToFit);
-            }
-            else
-            {
-                Text.Font = GameFont.Small;
-                Widgets.Label(rect3, "Loading...");
-            }
+            return rect1;
         }
 
-        private static Texture2D GetGeneratedTexture()
+        private static void Draw(Rect rect1, GeneratedImage image)
         {
-            if (cachedImageGenerated != null)
+            Rect rect3 = rect1;
+            rect3.yMin += 35f;
+            switch (image.Status)
             {
-                return cachedImageGenerated;
+                case GenerationStatus.Done:
+                    GUI.DrawTexture(rect3, image.Texture, ScaleMode.ScaleToFit);
+                    break;
+                case GenerationStatus.InProgress:
+                    Text.Font = GameFont.Small;
+                    Widgets.Label(rect3, "Loading...");
+                    break;
+                case GenerationStatus.Error:
+                default:
+                    Text.Font = GameFont.Small;
+                    Widgets.Label(rect3, image.Description ?? "Error");
+                    break;
             }
-            
-            VirtualDirectory virtualDirectory = AbstractFilesystem.GetDirectory("/Users/boris/Downloads/");
-            string expectedFileName = cachedImageDescription.GetHashCode() + ".png";
-            VirtualFile virtualFile = virtualDirectory.GetFile(expectedFileName);
-
-            Texture2D texture2D = ModContentLoader<Texture2D>.LoadItem(virtualFile).contentItem;
-            
-            if (texture2D != null)
-            {
-                cachedImageGenerated = texture2D;
-            }
-            return texture2D;
         }
     }
 }
