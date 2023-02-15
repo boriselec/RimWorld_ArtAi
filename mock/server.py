@@ -20,7 +20,6 @@ class Mock(BaseHTTPRequestHandler):
                 self.send_header("Content-type", "text")
                 self.end_headers()
                 self.result[post_data] = time()
-                result = 'Loading...'
                 self.wfile.write(bytes('Queued...', "utf-8"))
             elif time() < generate_time + 20:
                 self.send_header("Content-type", "text")
