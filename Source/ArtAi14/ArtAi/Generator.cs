@@ -1,8 +1,10 @@
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
 using ArtAi.data;
 using UnityEngine;
+using Verse;
 
 namespace ArtAi
 {
@@ -10,20 +12,29 @@ namespace ArtAi
     {
         public static GeneratedImage Generate(Description description)
         {
-            var request = MakeRequest(description.ArtDescription, description.ThingDescription);
-
-            using (var response = request.GetResponse())
+            try
             {
-                using (var rsDataStream = response.GetResponseStream())
+                var request = MakeRequest(description.ArtDescription, description.ThingDescription);
+
+                using (var response = request.GetResponse())
                 {
-                    return ProcessResponse(rsDataStream, response.ContentType);
+                    using (var rsDataStream = response.GetResponseStream())
+                    {
+                        return ProcessResponse(rsDataStream, response.ContentType);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);
+                return GeneratedImage.Error();
             }
         }
 
         private static WebRequest MakeRequest(string artDescription, string thingDescription)
         {
-            var request = WebRequest.Create("http://localhost:8080/generate");
+            var serverUrl = ArtAiSettings.ServerUrl;
+            var request = WebRequest.Create(serverUrl);
             request.Method = "POST";
             var postData = artDescription + ';' + thingDescription;
             var byteArray = Encoding.UTF8.GetBytes(postData);

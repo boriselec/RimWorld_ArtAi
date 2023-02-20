@@ -63,6 +63,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArtAiMod.cs" />
     <Compile Include="data\Description.cs" />
     <Compile Include="data\GeneratedImage.cs" />
     <Compile Include="Generator.cs" />
