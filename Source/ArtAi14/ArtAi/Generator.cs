@@ -58,6 +58,7 @@ namespace ArtAi
             switch (contentType)
             {
                 case "text":
+                case "text/plain":
                     using (var reader = new StreamReader(response))
                     {
                         var responseFromServer = reader.ReadToEnd();
