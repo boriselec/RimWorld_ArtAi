@@ -38,7 +38,7 @@ namespace ArtAi
             request.Method = "POST";
             var postData = artDescription + ';' + thingDescription;
             var byteArray = Encoding.UTF8.GetBytes(postData);
-            request.ContentType = "application/x-www-form-urlencoded";
+            request.ContentType = "text/plain";
             request.ContentLength = byteArray.Length;
             using (var rqDataStream = request.GetRequestStream())
             {
