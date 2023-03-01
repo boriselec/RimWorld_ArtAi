@@ -5,11 +5,11 @@ namespace ArtAi
 {
     public class ArtAiSettings : ModSettings
     {
-        public static string ServerUrl = "http://localhost:8080/generate";
+        public static string ServerUrl = "https://boriselec.com/rimworld-art/generate";
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(ref ServerUrl, "serverUrl", "http://localhost:8080/generate");
+            Scribe_Values.Look(ref ServerUrl, "serverUrl", "https://boriselec.com/rimworld-art/generate");
             base.ExposeData();
         }
     }
