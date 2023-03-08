@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using ArtAi.data;
+using Steamworks;
 using UnityEngine;
 using Verse;
 
@@ -14,7 +15,8 @@ namespace ArtAi
         {
             try
             {
-                var request = MakeRequest(description.ArtDescription, description.ThingDescription);
+                var steamAccountID = SteamUser.GetSteamID().GetAccountID().m_AccountID;
+                var request = MakeRequest(description.ArtDescription, description.ThingDescription, steamAccountID);
 
                 using (var response = request.GetResponse())
                 {
@@ -31,12 +33,12 @@ namespace ArtAi
             }
         }
 
-        private static WebRequest MakeRequest(string artDescription, string thingDescription)
+        private static WebRequest MakeRequest(string artDescription, string thingDescription, uint steamAccountID)
         {
             var serverUrl = ArtAiSettings.ServerUrl;
             var request = WebRequest.Create(serverUrl);
             request.Method = "POST";
-            var postData = artDescription + ';' + thingDescription;
+            var postData = artDescription + ';' + thingDescription + ';' + steamAccountID;
             var byteArray = Encoding.UTF8.GetBytes(postData);
             request.ContentType = "text/plain";
             request.ContentLength = byteArray.Length;
