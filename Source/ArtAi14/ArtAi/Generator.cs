@@ -16,7 +16,9 @@ namespace ArtAi
             try
             {
                 var steamAccountID = SteamUser.GetSteamID().GetAccountID().m_AccountID;
-                var request = MakeRequest(description.ArtDescription, description.ThingDescription, steamAccountID);
+                var language = LanguageDatabase.activeLanguage.folderName;
+                var request = MakeRequest(description.ArtDescription, description.ThingDescription,
+                    steamAccountID, language);
 
                 using (var response = request.GetResponse())
                 {
@@ -33,12 +35,13 @@ namespace ArtAi
             }
         }
 
-        private static WebRequest MakeRequest(string artDescription, string thingDescription, uint steamAccountID)
+        private static WebRequest MakeRequest(string artDescription, string thingDescription, uint steamAccountID,
+            string language)
         {
             var serverUrl = ArtAiSettings.ServerUrl;
             var request = WebRequest.Create(serverUrl);
             request.Method = "POST";
-            var postData = artDescription + ';' + thingDescription + ';' + steamAccountID;
+            var postData = artDescription + ';' + thingDescription + ';' + steamAccountID + ';' + language;
             var byteArray = Encoding.UTF8.GetBytes(postData);
             request.ContentType = "text/plain";
             request.ContentLength = byteArray.Length;
