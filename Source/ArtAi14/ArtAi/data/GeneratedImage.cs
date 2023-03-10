@@ -38,7 +38,7 @@ namespace ArtAi.data
         public bool NeedUpdate()
         {
             var needUpdate = (DateTime.Now - _timestamp).Seconds > UpToDateSeconds;
-            return Status == GenerationStatus.InProgress && needUpdate;
+            return Status != GenerationStatus.Done && needUpdate;
         }
     }
 
