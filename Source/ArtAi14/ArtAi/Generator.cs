@@ -67,7 +67,8 @@ namespace ArtAi
                     using (var reader = new StreamReader(response))
                     {
                         var responseFromServer = reader.ReadToEnd();
-                        return GeneratedImage.InProgress(responseFromServer);
+                        var processedResponse = TranslateResponse(responseFromServer);
+                        return GeneratedImage.InProgress(processedResponse);
                     }
                 case "image/png":
                     using (var ms = new MemoryStream())
@@ -82,6 +83,24 @@ namespace ArtAi
                 default:
                     return GeneratedImage.Error();
             }
+        }
+
+        private static string TranslateResponse(string responseFromServer)
+        {
+            const string queued = "Queued: ";
+            if (responseFromServer.Contains(queued))
+            {
+                var queuePos = responseFromServer.Substring(responseFromServer.IndexOf(queued) + queued.Length);
+                return "AiArtInProgress".Translate()
+                       + Environment.NewLine + Environment.NewLine +
+                       "AiArtQueued".Translate() + queuePos;
+            }
+            if (responseFromServer.Contains("Try later"))
+            {
+                return "AiArtLimit".Translate();
+            }
+
+            return responseFromServer;
         }
 
         private static string SteamAccountID()

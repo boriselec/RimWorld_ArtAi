@@ -66,12 +66,12 @@ namespace ArtAi
                     break;
                 case GenerationStatus.InProgress:
                     Text.Font = GameFont.Small;
-                    Widgets.Label(rect3, image.Description ?? "Loading...");
+                    Widgets.Label(rect3, image.Description);
                     break;
                 case GenerationStatus.Error:
                 default:
                     Text.Font = GameFont.Small;
-                    Widgets.Label(rect3, image.Description ?? "Error");
+                    Widgets.Label(rect3, image.Description);
                     break;
             }
         }
