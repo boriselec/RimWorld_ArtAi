@@ -123,7 +123,11 @@ namespace ArtAi
             {
                 Directory.CreateDirectory(dirPath);
             }
-            File.WriteAllBytes(dirPath + filename, data);
+            var filePath = dirPath + filename;
+            if (!File.Exists(filePath))
+            {
+                File.WriteAllBytes(filePath, data);
+            }
         }
     }
 }
