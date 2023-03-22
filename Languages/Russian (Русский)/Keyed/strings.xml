@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 	<TabArtView>Просмотр</TabArtView>
+	<AiArtInProgress>Изображение генерируется... Пожалуйста, подождите</AiArtInProgress>
+	<AiArtQueued>В очереди: </AiArtQueued>
+	<AiArtLimit>Превышен лимит. Попробуйте позднее</AiArtLimit>
+	<AiArtError>Ошибка</AiArtError>
 </LanguageData>

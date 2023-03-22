@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Verse;
 
 namespace ArtAi.data
 {
@@ -32,7 +33,7 @@ namespace ArtAi.data
 
         public static GeneratedImage Error()
         {
-            return new GeneratedImage(GenerationStatus.Error, null, "Error");
+            return new GeneratedImage(GenerationStatus.Error, null, "AiArtError".Translate());
         }
 
         public bool NeedUpdate()
