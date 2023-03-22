@@ -13,6 +13,11 @@ namespace ArtAi
     {
         public static GeneratedImage Generate(Description description)
         {
+            var cached = ImageRepo.GetImage(description);
+            if (cached != null)
+            {
+                return GeneratedImage.Done(cached);
+            }
             try
             {
                 var steamAccountID = SteamAccountID();
@@ -75,7 +80,7 @@ namespace ArtAi
                     {
                         response.CopyTo(ms);
                         var array = ms.ToArray();
-                        SaveImage(array, description.GetHashCode() + ".png");
+                        ImageRepo.SaveImage(array, description);
                         Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
                         tex.LoadImage(array);
                         tex.Apply();
@@ -113,20 +118,6 @@ namespace ArtAi
             catch (InvalidOperationException)
             {
                 return "unknown";
-            }
-        }
-
-        private static void SaveImage(byte[] data, string filename)
-        {
-            var dirPath = Application.dataPath + "/AiArt/";
-            if (!Directory.Exists(dirPath))
-            {
-                Directory.CreateDirectory(dirPath);
-            }
-            var filePath = dirPath + filename;
-            if (!File.Exists(filePath))
-            {
-                File.WriteAllBytes(filePath, data);
             }
         }
     }

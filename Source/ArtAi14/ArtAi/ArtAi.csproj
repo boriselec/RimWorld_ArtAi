@@ -71,6 +71,7 @@
     <Compile Include="data\Description.cs" />
     <Compile Include="data\GeneratedImage.cs" />
     <Compile Include="Generator.cs" />
+    <Compile Include="ImageRepo.cs" />
     <Compile Include="ITab_Art_Generated.cs" />
   </ItemGroup>
   <ItemGroup>
