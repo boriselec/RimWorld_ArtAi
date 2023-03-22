@@ -15,7 +15,7 @@ namespace ArtAi
         {
             try
             {
-                var steamAccountID = SteamUser.GetSteamID().GetAccountID().m_AccountID;
+                var steamAccountID = SteamAccountID();
                 var language = LanguageDatabase.activeLanguage.folderName;
                 var request = MakeRequest(description.ArtDescription, description.ThingDescription,
                     steamAccountID, language);
@@ -35,7 +35,7 @@ namespace ArtAi
             }
         }
 
-        private static WebRequest MakeRequest(string artDescription, string thingDescription, uint steamAccountID,
+        private static WebRequest MakeRequest(string artDescription, string thingDescription, string steamAccountID,
             string language)
         {
             var serverUrl = ArtAiSettings.ServerUrl;
@@ -81,6 +81,18 @@ namespace ArtAi
                     }
                 default:
                     return GeneratedImage.Error();
+            }
+        }
+
+        private static string SteamAccountID()
+        {
+            try
+            {
+                return SteamUser.GetSteamID().GetAccountID().m_AccountID.ToString();
+            }
+            catch (InvalidOperationException)
+            {
+                return "unknown";
             }
         }
     }
