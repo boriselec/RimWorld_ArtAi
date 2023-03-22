@@ -24,7 +24,7 @@ namespace ArtAi
                 {
                     using (var rsDataStream = response.GetResponseStream())
                     {
-                        return ProcessResponse(rsDataStream, response.ContentType);
+                        return ProcessResponse(rsDataStream, response.ContentType, description);
                     }
                 }
             }
@@ -53,7 +53,7 @@ namespace ArtAi
             return request;
         }
 
-        private static GeneratedImage ProcessResponse(Stream response, string contentType)
+        private static GeneratedImage ProcessResponse(Stream response, string contentType, Description description)
         {
             if (response == null)
             {
@@ -75,6 +75,7 @@ namespace ArtAi
                     {
                         response.CopyTo(ms);
                         var array = ms.ToArray();
+                        SaveImage(array, description.GetHashCode() + ".png");
                         Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
                         tex.LoadImage(array);
                         tex.Apply();
@@ -113,6 +114,16 @@ namespace ArtAi
             {
                 return "unknown";
             }
+        }
+
+        private static void SaveImage(byte[] data, string filename)
+        {
+            var dirPath = Application.dataPath + "/AiArt/";
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+            File.WriteAllBytes(dirPath + filename, data);
         }
     }
 }
