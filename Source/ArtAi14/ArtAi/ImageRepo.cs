@@ -19,14 +19,16 @@ namespace ArtAi
                 VirtualDirectory virtualDirectory = AbstractFilesystem.GetDirectory(RepoPath);
                 string expectedFileName = GetImageFileName(description);
                 VirtualFile virtualFile = virtualDirectory.GetFile(expectedFileName);
-
-                return ModContentLoader<Texture2D>.LoadItem(virtualFile).contentItem;
+                if (virtualFile.Exists)
+                {
+                    return ModContentLoader<Texture2D>.LoadItem(virtualFile).contentItem;
+                }
             }
             catch (Exception e)
             {
                 Log.Error(e.Message);
-                return null;
             }
+            return null;
         }
         
         public static void SaveImage(byte[] data, Description description)
