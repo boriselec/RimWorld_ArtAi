@@ -10,7 +10,7 @@ namespace ArtAi
 {
     public abstract class ImageRepo
     {
-        private static readonly string RepoPath = Application.dataPath + "/AiArt/";
+        private static readonly string RepoPath = Path.Combine(GenFilePaths.SaveDataFolderPath, "AiArt");
 
         public static Texture2D GetImage(Description description)
         {
@@ -40,7 +40,7 @@ namespace ArtAi
                     Directory.CreateDirectory(RepoPath);
                 }
 
-                var filePath = RepoPath + GetImageFileName(description);
+                var filePath = Path.Combine(RepoPath, GetImageFileName(description));
                 if (!File.Exists(filePath))
                 {
                     File.WriteAllBytes(filePath, data);
