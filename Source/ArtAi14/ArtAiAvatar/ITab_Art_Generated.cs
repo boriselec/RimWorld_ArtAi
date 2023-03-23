@@ -9,8 +9,6 @@ namespace ArtAi
     public class ITab_Art_Generated : ITab
     {
         private static readonly Vector2 WinSize = new Vector2(400f, 300f);
-        private readonly Dictionary<Description, GeneratedImage> _images
-            = new Dictionary<Description, GeneratedImage>();
 
         private CompArt SelectedCompArt
         {
@@ -35,13 +33,8 @@ namespace ArtAi
         {
             var rect1 = DrawHeader();
 
-            GeneratedImage image;
-            Description description = new Description(SelectedCompArt);
-            if (!_images.ContainsKey(description) || (image = _images[description]).NeedUpdate())
-            {
-                image = Generator.Generate(description);
-                _images[description] = image;
-            }
+            Description description = DescriptionCompArt.GetDescription(SelectedCompArt);
+            var image = LocalRepository.Instance.GetImage(description);
 
             Draw(rect1, image);
         }
@@ -66,12 +59,12 @@ namespace ArtAi
                     break;
                 case GenerationStatus.InProgress:
                     Text.Font = GameFont.Small;
-                    Widgets.Label(rect3, image.Description);
+                    Widgets.Label(rect3, image.Description ?? "Loading...");
                     break;
                 case GenerationStatus.Error:
                 default:
                     Text.Font = GameFont.Small;
-                    Widgets.Label(rect3, image.Description);
+                    Widgets.Label(rect3, image.Description ?? "Error");
                     break;
             }
         }

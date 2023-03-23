@@ -13,14 +13,9 @@ namespace ArtAi
     {
         public static GeneratedImage Generate(Description description)
         {
-            var cached = ImageRepo.GetImage(description);
-            if (cached != null)
-            {
-                return GeneratedImage.Done(cached);
-            }
             try
             {
-                var steamAccountID = SteamAccountID();
+                var steamAccountID = SteamUser.GetSteamID().GetAccountID().m_AccountID;
                 var language = LanguageDatabase.activeLanguage.folderName;
                 var request = MakeRequest(description.ArtDescription, description.ThingDescription,
                     steamAccountID, language);
@@ -29,18 +24,18 @@ namespace ArtAi
                 {
                     using (var rsDataStream = response.GetResponseStream())
                     {
-                        return ProcessResponse(rsDataStream, response.ContentType, description);
+                        return ProcessResponse(rsDataStream, response.ContentType);
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Error(e.Message);
+                Log.Error("ArtAi Generator " + e.Message);
                 return GeneratedImage.Error();
             }
         }
 
-        private static WebRequest MakeRequest(string artDescription, string thingDescription, string steamAccountID,
+        private static WebRequest MakeRequest(string artDescription, string thingDescription, uint steamAccountID,
             string language)
         {
             var serverUrl = ArtAiSettings.ServerUrl;
@@ -58,10 +53,11 @@ namespace ArtAi
             return request;
         }
 
-        private static GeneratedImage ProcessResponse(Stream response, string contentType, Description description)
+        private static GeneratedImage ProcessResponse(Stream response, string contentType)
         {
             if (response == null)
             {
+                Log.Message("ArtAi Generator error");
                 return GeneratedImage.Error();
             }
 
@@ -69,55 +65,26 @@ namespace ArtAi
             {
                 case "text":
                 case "text/plain":
+                    Log.Message("ArtAi Generator in progress");
                     using (var reader = new StreamReader(response))
                     {
                         var responseFromServer = reader.ReadToEnd();
-                        var processedResponse = TranslateResponse(responseFromServer);
-                        return GeneratedImage.InProgress(processedResponse);
+                        return GeneratedImage.InProgress(responseFromServer);
                     }
                 case "image/png":
+                    Log.Message("ArtAi Generator get image");
                     using (var ms = new MemoryStream())
                     {
                         response.CopyTo(ms);
                         var array = ms.ToArray();
-                        ImageRepo.SaveImage(array, description);
                         Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
                         tex.LoadImage(array);
                         tex.Apply();
                         return GeneratedImage.Done(tex);
                     }
                 default:
+                    Log.Message("ArtAi Generator error");
                     return GeneratedImage.Error();
-            }
-        }
-
-        private static string TranslateResponse(string responseFromServer)
-        {
-            const string queued = "Queued: ";
-            if (responseFromServer.Contains(queued))
-            {
-                var queuePos = responseFromServer.Substring(responseFromServer.IndexOf(queued) + queued.Length);
-                return "AiArtInProgress".Translate()
-                       + Environment.NewLine + Environment.NewLine +
-                       "AiArtQueued".Translate() + queuePos;
-            }
-            if (responseFromServer.Contains("Try later"))
-            {
-                return "AiArtLimit".Translate();
-            }
-
-            return responseFromServer;
-        }
-
-        private static string SteamAccountID()
-        {
-            try
-            {
-                return SteamUser.GetSteamID().GetAccountID().m_AccountID.ToString();
-            }
-            catch (InvalidOperationException)
-            {
-                return "unknown";
             }
         }
     }
