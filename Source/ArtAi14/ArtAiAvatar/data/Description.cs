@@ -5,12 +5,20 @@ namespace ArtAi.data
     public struct Description
     {
         public string ArtDescription { get; }
+
         public string ThingDescription { get; }
 
-        public Description(CompArt compArt)
+        public bool IsNull => ArtDescription == null && ThingDescription == null;
+
+        public Description(string artDescription, string thingDescription)
         {
-            ArtDescription = compArt.GenerateImageDescription();
-            ThingDescription = compArt.parent.def.description;
+            ArtDescription = artDescription;
+            ThingDescription = thingDescription;
+        }
+
+        public override int GetHashCode()
+        {
+            return (ArtDescription + ";" + ThingDescription).GetHashCode();
         }
     }
 }
