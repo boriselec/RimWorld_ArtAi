@@ -21,9 +21,9 @@ namespace ArtAi.data
             ThingDescription = thingDescription;
         }
 
-        public override int GetHashCode()
+        public int GetHash()
         {
-            return (ArtDescription + ";" + ThingDescription).GetHashCode();
+            return (ArtDescription + ";" + ThingDescription).GetDeterministicHashCode();
         }
     }
 }

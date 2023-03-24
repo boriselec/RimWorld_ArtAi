@@ -81,6 +81,7 @@
     <Compile Include="Generator.cs" />
     <Compile Include="ImageRepo.cs" />
     <Compile Include="ITab_Art_Generated.cs" />
+    <Compile Include="StringUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

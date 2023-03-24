@@ -54,7 +54,7 @@ namespace ArtAi
 
         private static string GetImageFileName(Description description)
         {
-            var hash = ((uint)description.GetHashCode()).ToString();
+            var hash = ((uint)description.GetHash()).ToString();
             int trimTo = 250 - RepoPath.Length - hash.Length;
             string sanitizedFileName = trimTo > 0 
                 ? Path.GetInvalidFileNameChars()
@@ -62,7 +62,11 @@ namespace ArtAi
                     (f, c) => f.Replace(c, '_'))
                 .Replace(" ", "_")
                 : String.Empty;
-            return sanitizedFileName.Substring(0, Math.Min(sanitizedFileName.Length, trimTo)) + hash + ".png";
+
+            if (sanitizedFileName.Length > trimTo)
+                return sanitizedFileName.Substring(0, trimTo) + hash + ".png";
+            else
+                return sanitizedFileName + ".png";
         }
     }
 }
