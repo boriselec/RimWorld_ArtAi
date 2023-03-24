@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ArtAi.data;
 using RimWorld;
 using UnityEngine;
@@ -34,7 +33,7 @@ namespace ArtAi
             var rect1 = DrawHeader();
 
             Description description = new Description(SelectedCompArt);
-            var image = Generator.Generate(description);
+            var image = Generator.Generate(description, LanguageDatabase.activeLanguage.folderName);
             Draw(rect1, image);
         }
 
