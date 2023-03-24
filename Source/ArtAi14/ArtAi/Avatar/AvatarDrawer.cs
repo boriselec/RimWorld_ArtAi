@@ -81,7 +81,7 @@ namespace ArtAi.Avatar
 
             if (!description.IsNull)
             { 
-                var image = LocalRepository.Instance.GetImage(description);
+                var image = Generator.Generate(description);
                 if (image.Status == GenerationStatus.Done)
                 {
                     GUI.DrawTexture(rect, image.Texture);

@@ -9,8 +9,6 @@ namespace ArtAi
     public class ITab_Art_Generated : ITab
     {
         private static readonly Vector2 WinSize = new Vector2(400f, 300f);
-        private readonly Dictionary<Description, GeneratedImage> _images
-            = new Dictionary<Description, GeneratedImage>();
 
         private CompArt SelectedCompArt
         {
@@ -35,14 +33,8 @@ namespace ArtAi
         {
             var rect1 = DrawHeader();
 
-            GeneratedImage image;
             Description description = new Description(SelectedCompArt);
-            if (!_images.ContainsKey(description) || (image = _images[description]).NeedUpdate())
-            {
-                image = Generator.Generate(description);
-                _images[description] = image;
-            }
-
+            var image = Generator.Generate(description);
             Draw(rect1, image);
         }
 
