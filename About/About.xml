@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>AI art avatar</name>
+	<name>AI art</name>
 	<author>boriselec, aant</author>
 	<supportedVersions>
 		<li>1.4</li>
 	</supportedVersions>
 	<url>none</url>
-	<packageId>aant.artaiavatar</packageId>
+	<packageId>boriselec.ArtAi</packageId>
 	<loadAfter>
 	</loadAfter>
 	<modDependencies>
@@ -17,6 +17,5 @@
 			<downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
 		</li>
 	</modDependencies>
-	<description>Show AI generated art.
-This is an extension for Art ai - forked https://steamcommunity.com/sharedfiles/filedetails/?id=2934195167</description>
+	<description>Show AI generated art.</description>
 </ModMetaData>
