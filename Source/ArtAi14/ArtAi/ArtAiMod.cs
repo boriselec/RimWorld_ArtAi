@@ -1,3 +1,4 @@
+using HarmonyLib;
 using UnityEngine;
 using Verse;
 
@@ -16,6 +17,12 @@ namespace ArtAi
 
     public class ArtAiMod : Mod
     {
+        static ArtAiMod()
+        {
+            var harmony = new Harmony("artaiavatar.patch");
+            harmony.PatchAll();
+        }
+
         public ArtAiMod(ModContentPack content) : base(content)
         {
         }

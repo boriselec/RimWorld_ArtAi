@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -11,32 +12,48 @@ namespace ArtAi
 {
     public abstract class Generator
     {
+        private static readonly Dictionary<Description, GeneratedImage> _images
+            = new Dictionary<Description, GeneratedImage>();
+
         public static GeneratedImage Generate(Description description)
         {
-            var cached = ImageRepo.GetImage(description);
-            if (cached != null)
+            GeneratedImage image = null;
+            if (_images.ContainsKey(description) && !(image = _images[description]).NeedUpdate())
             {
-                return GeneratedImage.Done(cached);
+                return image;
             }
+
             try
             {
-                var steamAccountID = SteamAccountID();
-                var language = LanguageDatabase.activeLanguage.folderName;
-                var request = MakeRequest(description.ArtDescription, description.ThingDescription,
-                    steamAccountID, language);
-
-                using (var response = request.GetResponse())
+                var cached = ImageRepo.GetImage(description);
+                if (cached != null)
                 {
-                    using (var rsDataStream = response.GetResponseStream())
+                    return image = GeneratedImage.Done(cached);
+                }
+                try
+                {
+                    var steamAccountID = SteamAccountID();
+                    var language = LanguageDatabase.activeLanguage.folderName;
+                    var request = MakeRequest(description.ArtDescription, description.ThingDescription,
+                        steamAccountID, language);
+
+                    using (var response = request.GetResponse())
                     {
-                        return ProcessResponse(rsDataStream, response.ContentType, description);
+                        using (var rsDataStream = response.GetResponseStream())
+                        {
+                            return image = ProcessResponse(rsDataStream, response.ContentType, description);
+                        }
                     }
                 }
+                catch (Exception e)
+                {
+                    Log.Error(e.Message);
+                    return image = GeneratedImage.Error();
+                }
             }
-            catch (Exception e)
+            finally
             {
-                Log.Error(e.Message);
-                return GeneratedImage.Error();
+                if (image != null) _images[description] = image;
             }
         }
 
