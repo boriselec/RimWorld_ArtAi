@@ -15,10 +15,10 @@ namespace ArtAi
         private static readonly Dictionary<Description, GeneratedImage> _images
             = new Dictionary<Description, GeneratedImage>();
 
-        public static GeneratedImage Generate(Description description)
+        public static GeneratedImage Generate(Description description, bool withoutNewGenerate = false)
         {
             GeneratedImage image = null;
-            if (_images.ContainsKey(description) && !(image = _images[description]).NeedUpdate())
+            if (_images.ContainsKey(description) && !(image = _images[description]).NeedUpdate(withoutNewGenerate))
             {
                 return image;
             }
@@ -30,8 +30,14 @@ namespace ArtAi
                 {
                     return image = GeneratedImage.Done(cached);
                 }
+                if (withoutNewGenerate)
+                {
+                    if (_images.ContainsKey(description)) return _images[description];
+                    else return image = GeneratedImage.NeedGenerate();
+                }
                 try
                 {
+                    Log.Message("AI Art request");
                     var steamAccountID = SteamAccountID();
                     var request = MakeRequest(description.ArtDescription, description.ThingDescription,
                         steamAccountID, description.Language);
