@@ -34,12 +34,14 @@ namespace ArtAi.Avatar
                 var hairLong = hairstyles.Contains("HairLong");
                 var hairMid = !(hairShort ^ hairLong);
                 var hairBald = hairstyles.Contains("Shaved") || hairstyles.Any(s => s.Contains("Bald"));
+                var appearanceTraits = AppearanceTraits(pawn);
 
                 appearance =
                     (bodyType == "Hulk" ? "inflated physique " // brawny ?
                         : bodyType == "Thin" ? "thin "
                         : bodyType == "Fat" ? "fat "
                         : "")
+                    + string.Join(" ", appearanceTraits) + " "
                     + (pawn.gender == Gender.Female && ageRound < 25 ? "girl "
                         : pawn.gender == Gender.Female && ageRound >= 25 ? "woman "
                         : pawn.gender == Gender.Male && ageRound < 18 ? "boy "
@@ -75,6 +77,42 @@ namespace ArtAi.Avatar
             }
 
             return new Description(appearance, "beautiful portrait of a human", LanguageDatabase.DefaultLangFolderName);
+        }
+
+        private static List<string> AppearanceTraits(Pawn pawn)
+        {
+            return pawn.story.traits.allTraits
+                .OrderByDescending(t =>
+                {
+                    switch (t.def.defName)
+                    {
+                        // important traits for appearance
+                        case "Beauty":
+                        case "Nudist":
+                            return 2;
+                        // somewhat important traits for appearance
+                        case "Bloodlust":
+                        case "Psychopath":
+                        case "Cannibal":
+                        case "Brawler":
+                        case "Ascetic":
+                        case "Gay":
+                        case "Wimp":
+                        case "Nimble":
+                        case "Tough":
+                        case "NaturalMood":
+                        case "Nerves":
+                        case "Neurotic":
+                            return 1;
+                        // anything else
+                        default:
+                            return 0;
+                    }
+                })
+                .ThenBy(t => t.def.defName)
+                .Select(t => t.CurrentData.untranslatedLabel)
+                .Take(3)
+                .ToList();
         }
 
         private static string GetColorText(Color color, Dictionary<Color, string> map)
