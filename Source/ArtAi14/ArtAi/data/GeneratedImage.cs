@@ -36,8 +36,14 @@ namespace ArtAi.data
             return new GeneratedImage(GenerationStatus.Error, null, "AiArtError".Translate());
         }
 
-        public bool NeedUpdate()
+        public static GeneratedImage NeedGenerate()
         {
+            return new GeneratedImage(GenerationStatus.NeedGenerate, null, null);
+        }
+
+        public bool NeedUpdate(bool withoutNewGenerate)
+        {
+            if (!withoutNewGenerate && Status == GenerationStatus.NeedGenerate) return true;
             var needUpdate = (DateTime.Now - _timestamp).Seconds > UpToDateSeconds;
             return Status != GenerationStatus.Done && needUpdate;
         }
@@ -48,5 +54,6 @@ namespace ArtAi.data
         InProgress,
         Done,
         Error,
+        NeedGenerate
     }
 }
