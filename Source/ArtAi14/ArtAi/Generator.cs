@@ -15,7 +15,7 @@ namespace ArtAi
         private static readonly Dictionary<Description, GeneratedImage> _images
             = new Dictionary<Description, GeneratedImage>();
 
-        public static GeneratedImage Generate(Description description, string language = "English")
+        public static GeneratedImage Generate(Description description)
         {
             GeneratedImage image = null;
             if (_images.ContainsKey(description) && !(image = _images[description]).NeedUpdate())
@@ -34,7 +34,7 @@ namespace ArtAi
                 {
                     var steamAccountID = SteamAccountID();
                     var request = MakeRequest(description.ArtDescription, description.ThingDescription,
-                        steamAccountID, language);
+                        steamAccountID, description.Language);
 
                     using (var response = request.GetResponse())
                     {
