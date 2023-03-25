@@ -11,11 +11,21 @@ using Verse;
 
 namespace ArtAi.Avatar
 {
+    [StaticConstructorOnStartup]
     public static class AvatarDrawer
     {
-        public static bool DoubleSize = true;
+        public static bool DoubleSize
+        { 
+            get { return _doubleSize && !_activIconNeedUpdate; }
+            set { _doubleSize = value; }
+        }
+
+        private static bool _doubleSize = true;
+        private static bool _activIconNeedUpdate;
 
         private static CompArt GetCompArt(Thing thing) => thing == null ? null : thing.TryGetComp<CompArt>();
+
+        private static readonly Texture2D Icon_Idle = ContentFinder<Texture2D>.Get("UI/Icons/ColonistBar/Idle");
 
         public static bool NeedDraw(Thing thing)
         {
@@ -65,28 +75,47 @@ namespace ArtAi.Avatar
             return description;
         }
 
-        private static void Draw(Description description, Rect rect, Thing thing, WorldObject worldObject, bool onlyContent = false)
+        private static void Draw(Description description, Rect rect, Thing thing, WorldObject worldObject)
         {
-            var click = false;
-            if (!onlyContent)
+            if (description.IsNull) return;
+
+            var image = Generator.Generate(description, true);
+            if (image.Status == GenerationStatus.InProgress)
             {
-                if (Widgets.ButtonInvisible(rect))
+                image = Generator.Generate(description);
+            }
+            var click = false;
+            if (Widgets.ButtonInvisible(rect))
+            {
+                if (image.Status == GenerationStatus.NeedGenerate)
                 {
-                    click = true;
-                    DoubleSize = !DoubleSize;
+                    image = Generator.Generate(description);
                 }
-                GUI.DrawTexture(rect, Command.BGTexShrunk); //BGTex);
-                rect = rect.ContractedBy(2);
+                else
+                    click = true;
             }
 
-            if (!description.IsNull)
-            { 
-                var image = Generator.Generate(description);
-                if (image.Status == GenerationStatus.Done)
-                {
-                    GUI.DrawTexture(rect, image.Texture);
+            GUI.DrawTexture(rect, Command.BGTexShrunk); //BGTex);
+            rect = rect.ContractedBy(2);
 
-                    if (!onlyContent && click && DoubleSize)
+            if (image.Status != GenerationStatus.Done)
+            {
+                _activIconNeedUpdate = true;
+                var texture = image.Status == GenerationStatus.NeedGenerate ? TexButton.OpenInspector : Icon_Idle;
+                var width = 24f;
+                var dw2 = (rect.width - 24f) / 2f;
+                var dh2 = (rect.height - 24f) / 2f;
+                GUI.DrawTexture(new Rect(rect.x + dw2, rect.y + dh2, width, width), texture);
+            }
+            else
+            {
+                _activIconNeedUpdate = false;
+                GUI.DrawTexture(rect, image.Texture);
+
+                if (click)
+                {
+                    DoubleSize = !DoubleSize;
+                    if (DoubleSize)
                     {
                         Find.WindowStack.Add(new Dialog_ShowImage(image.Texture));
                     }
@@ -94,9 +123,9 @@ namespace ArtAi.Avatar
             }
         }
 
-        public static void Draw(Thing thing, Rect rect, bool onlyContent = false) => Draw(GetDescription(thing), rect, thing, null, onlyContent);
+        public static void Draw(Thing thing, Rect rect) => Draw(GetDescription(thing), rect, thing, null);
 
-        public static void Draw(WorldObject worldObject, Rect rect, bool onlyContent = false) => Draw(GetDescription(worldObject), rect, null, worldObject, onlyContent);
+        public static void Draw(WorldObject worldObject, Rect rect) => Draw(GetDescription(worldObject), rect, null, worldObject);
 
     }
 }
