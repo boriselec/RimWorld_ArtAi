@@ -32,8 +32,8 @@ namespace ArtAi
         {
             var rect1 = DrawHeader();
 
-            Description description = new Description(SelectedCompArt);
-            var image = Generator.Generate(description, LanguageDatabase.activeLanguage.folderName);
+            Description description = new Description(SelectedCompArt, LanguageDatabase.activeLanguage.folderName);
+            var image = Generator.Generate(description);
             Draw(rect1, image);
         }
 

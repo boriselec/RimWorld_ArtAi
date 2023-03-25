@@ -74,7 +74,7 @@ namespace ArtAi.Avatar
 #endif
             }
 
-            return new Description(appearance, "beautiful portrait of a human");
+            return new Description(appearance, "beautiful portrait of a human", LanguageDatabase.DefaultLangFolderName);
         }
 
         private static string GetColorText(Color color, Dictionary<Color, string> map)
