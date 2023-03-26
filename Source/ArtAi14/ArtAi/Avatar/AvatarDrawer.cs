@@ -121,6 +121,11 @@ namespace ArtAi.Avatar
                     }
                 }
             }
+
+            if (!string.IsNullOrEmpty(image.Description))
+            {
+                TooltipHandler.TipRegion(rect, image.Description);
+            }
         }
 
         public static void Draw(Thing thing, Rect rect) => Draw(GetDescription(thing), rect, thing, null);
