@@ -29,6 +29,8 @@ namespace ArtAi.Avatar
 
         public static bool NeedDraw(Thing thing)
         {
+            if (!ArtAiSettings.ShowGizmo) return false;
+
             CompArt compArt = GetCompArt(thing);
             if (compArt != null && compArt.Active) return true;
             if (thing is Pawn pawn && pawn.IsColonistPlayerControlled && !pawn.IsPrisoner && !pawn.IsSlave) return true;
