@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 
@@ -48,7 +46,7 @@ namespace ArtAi.Avatar
                         : pawn.gender == Gender.Male && ageRound < 18 ? "boy "
                         : pawn.gender == Gender.Male && ageRound >= 18 ? "male "
                         : "")
-                    + (pawn.story.TitleShortCap + " ")
+                    + TitleShortCapUntranslated(pawn) + " "
                     + (pawn.story.SkinColorBase.r > 0.5f ? "light-skinned " : "dark-skinned ")
                     + (hairBald ? "bald " : "with " + (hairMid ? "shoulder-length " : hairLong ? "long " : "short ") + GetColorText(pawn.story.HairColor, HairColorMap) + " hair ")
                     + (pawn.gender == Gender.Female ? "" : pawn.style.beardDef.defName == "NoBeard" ? "clean-shaven " : "with beard ")
@@ -61,7 +59,7 @@ namespace ArtAi.Avatar
                     appearance + Environment.NewLine +
                     Environment.NewLine +
                     $"LabelCap={pawn.LabelCap} " + Environment.NewLine + //Noah<color=#999999FF>, Designer</color> 
-                    $"TitleShortCap={pawn.story.TitleShortCap} " + Environment.NewLine + //Designer 
+                    $"TitleShortCap={TitleShortCapUntranslated(pawn)} " + Environment.NewLine + //Designer 
                     $"bodyType={pawn.story.bodyType.defName} " + Environment.NewLine + //Hulk, Thin, Fat
                     $"HairColor={pawn.story.HairColor} {GetColorText(pawn.story.HairColor, HairColorMap)}" + Environment.NewLine +
                     $"SkinColor={pawn.story.SkinColor} " + Environment.NewLine + //0.3882353
@@ -78,6 +76,49 @@ namespace ArtAi.Avatar
             }
 
             return new Description(appearance, "beautiful portrait of a human", LanguageDatabase.DefaultLangFolderName);
+        }
+
+        // copy of Pawn_StoryTracker#TitleShortCap with no translation
+        private static string TitleShortCapUntranslated(Pawn pawn)
+        {
+            var story = pawn.story;
+            var gender = pawn.gender;
+            var storyAdulthood = story.Adulthood;
+            var storyChildhood = story.Childhood;
+            if (storyAdulthood != null)
+            {
+                if (gender == Gender.Female && !storyAdulthood.untranslatedTitleShortFemale.NullOrEmpty())
+                {
+                    return storyAdulthood.untranslatedTitleShortFemale;
+                }
+                if (!storyAdulthood.untranslatedTitleShort.NullOrEmpty())
+                {
+                    return storyAdulthood.untranslatedTitleShort;
+                }
+                if (gender == Gender.Female && !storyAdulthood.untranslatedTitleFemale.NullOrEmpty())
+                {
+                    return storyAdulthood.untranslatedTitleFemale;
+                }
+                return storyAdulthood.untranslatedTitle;
+            }
+            if (storyChildhood != null)
+            {
+                if (gender == Gender.Female && storyChildhood.untranslatedTitleShortFemale.NullOrEmpty())
+                {
+                    return storyChildhood.untranslatedTitleShortFemale;
+                }
+                if (!storyChildhood.untranslatedTitleShort.NullOrEmpty())
+                {
+                    return storyChildhood.untranslatedTitleShort;
+                }
+
+                if (gender == Gender.Female && !storyChildhood.untranslatedTitleFemale.NullOrEmpty())
+                {
+                    return storyChildhood.untranslatedTitleFemale;
+                }
+                return storyChildhood.untranslatedTitle;
+            }
+            return "";
         }
 
         private static List<string> AppearanceTraits(Pawn pawn)
