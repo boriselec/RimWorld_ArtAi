@@ -152,6 +152,7 @@ namespace ArtAi.Avatar
                     }
                 })
                 .ThenBy(t => t.def.defName)
+                .Where(t => !"QuickSleeper".Equals(t.def.defName))
                 .Select(t => t.CurrentData.untranslatedLabel)
                 .Take(3)
                 .ToList();
