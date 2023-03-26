@@ -2,7 +2,7 @@
 <LanguageData>
 	<TabArtView>View</TabArtView>
 	<AiArtInProgress>Image is generating... Please wait</AiArtInProgress>
-	<AiArtQueued>Queued: </AiArtQueued>
+	<AiArtTimeReaming>Approximate waiting time: </AiArtTimeReaming>
 	<AiArtLimit>Limit exceeded. Try later</AiArtLimit>
 	<AiArtError>Error</AiArtError>
 </LanguageData>
