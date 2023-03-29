@@ -153,6 +153,7 @@ namespace ArtAi.Avatar
                 })
                 .ThenBy(t => t.def.defName)
                 .Where(t => !"QuickSleeper".Equals(t.def.defName))
+                .Where(t => !"Nudist".Equals(t.def.defName) || pawn.ageTracker.AgeBiologicalYears >= 18)
                 .Select(t => t.CurrentData.untranslatedLabel)
                 .Take(3)
                 .ToList();
