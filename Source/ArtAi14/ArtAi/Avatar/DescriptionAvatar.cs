@@ -181,7 +181,8 @@ namespace ArtAi.Avatar
             var hairColorGene = pawn.genes.GetHairColorGene();
             if (hairColorGene != null)
             {
-                return hairColorGene.label.Replace(" hair", "");
+                return UntranslatedDefs.Labels.TryGetValue(hairColorGene.defName, hairColorGene.label)
+                    .Replace(" hair", "");
             }
             // custom hair
             return GetColorText(hairColor, HairColorMap);
