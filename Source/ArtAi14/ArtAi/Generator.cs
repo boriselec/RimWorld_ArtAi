@@ -28,7 +28,7 @@ namespace ArtAi
                 var cached = ImageRepo.GetImage(description);
                 if (cached != null)
                 {
-                    return image = GeneratedImage.Done(cached);
+                    return image = GeneratedImage.Done(cached, description.ArtDescription);
                 }
                 if (withoutNewGenerate)
                 {
@@ -106,7 +106,7 @@ namespace ArtAi
                         Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
                         tex.LoadImage(array);
                         tex.Apply();
-                        return GeneratedImage.Done(tex);
+                        return GeneratedImage.Done(tex, description.ArtDescription);
                     }
                 default:
                     return GeneratedImage.Error();

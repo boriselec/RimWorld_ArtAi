@@ -5,4 +5,5 @@
 	<AiArtTimeReaming>Примерное время ожидания: </AiArtTimeReaming>
 	<AiArtLimit>Превышен лимит. Попробуйте позднее</AiArtLimit>
 	<AiArtError>Ошибка</AiArtError>
+	<AiArtGizmoTooltip>Нажмите для генерации изображения</AiArtGizmoTooltip>
 </LanguageData>
