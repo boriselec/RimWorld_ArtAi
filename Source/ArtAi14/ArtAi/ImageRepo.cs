@@ -17,9 +17,9 @@ namespace ArtAi
             try
             {
                 VirtualDirectory virtualDirectory = AbstractFilesystem.GetDirectory(RepoPath);
-                string expectedFileName = GetImageFileName(description);
-                VirtualFile virtualFile = virtualDirectory.GetFile(expectedFileName);
-                if (virtualFile.Exists)
+                VirtualFile virtualFile = GetLastModifiedFile(virtualDirectory, description);
+                
+                if (virtualFile != null)
                 {
                     return ModContentLoader<Texture2D>.LoadItem(virtualFile).contentItem;
                 }
@@ -30,17 +30,32 @@ namespace ArtAi
             }
             return null;
         }
-        
+
+        private static VirtualFile GetLastModifiedFile(VirtualDirectory imageDir, Description description)
+        {
+            var thingDir = imageDir.GetDirectory(description.ThingId);
+            return (thingDir.Exists
+                    ? thingDir.GetFiles("*png", SearchOption.TopDirectoryOnly)
+                    : Enumerable.Empty<VirtualFile>())
+                // legacy path
+                .Concat(Enumerable.Repeat(imageDir.GetFile(GetImageFileName(description, RepoPath)), 1))
+                .Where(f => f.Exists)
+                .OrderByDescending(f => new FileInfo(f.FullPath).LastWriteTime)
+                .FirstOrFallback();
+        }
+
         public static void SaveImage(byte[] data, Description description)
         {
             try
             {
-                if (!Directory.Exists(RepoPath))
+                var dirPath = Path.Combine(RepoPath, description.ThingId);
+                if (!Directory.Exists(dirPath))
                 {
-                    Directory.CreateDirectory(RepoPath);
+                    Directory.CreateDirectory(dirPath);
                 }
 
-                var filePath = Path.Combine(RepoPath, GetImageFileName(description));
+                var imageFileName = GetImageFileName(description, dirPath);
+                var filePath = Path.Combine(dirPath, imageFileName);
                 if (!File.Exists(filePath))
                 {
                     File.WriteAllBytes(filePath, data);
@@ -52,10 +67,10 @@ namespace ArtAi
             }
         }
 
-        private static string GetImageFileName(Description description)
+        private static string GetImageFileName(Description description, string dirPath)
         {
             var hash = ((uint)description.GetHash()).ToString();
-            int trimTo = 250 - RepoPath.Length - hash.Length;
+            int trimTo = 250 - dirPath.Length - hash.Length;
             string sanitizedFileName = trimTo > 0 
                 ? Path.GetInvalidFileNameChars()
                 .Aggregate(description.ArtDescription + description.ThingDescription,

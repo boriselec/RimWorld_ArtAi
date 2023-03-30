@@ -75,7 +75,8 @@ namespace ArtAi.Avatar
 #endif
             }
 
-            return new Description(appearance, "beautiful portrait of a human", LanguageDatabase.DefaultLangFolderName);
+            var thingDesc = "beautiful portrait of a human";
+            return new Description(appearance, thingDesc, LanguageDatabase.DefaultLangFolderName, pawn.ThingID);
         }
 
         // copy of Pawn_StoryTracker#TitleShortCap with no translation
