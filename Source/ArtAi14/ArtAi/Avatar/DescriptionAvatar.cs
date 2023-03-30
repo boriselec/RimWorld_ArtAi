@@ -48,7 +48,7 @@ namespace ArtAi.Avatar
                         : "")
                     + TitleShortCapUntranslated(pawn) + " "
                     + (pawn.story.SkinColorBase.r > 0.5f ? "light-skinned " : "dark-skinned ")
-                    + (hairBald ? "bald " : "with " + (hairMid ? "shoulder-length " : hairLong ? "long " : "short ") + GetColorText(pawn.story.HairColor, HairColorMap) + " hair ")
+                    + (hairBald ? "bald " : "with " + (hairMid ? "shoulder-length " : hairLong ? "long " : "short ") + GetHairColorText(pawn) + " hair ")
                     + (pawn.gender == Gender.Female ? "" : pawn.style.beardDef.defName == "NoBeard" ? "clean-shaven " : "with beard ")
                     + (pawn.story.favoriteColor == null ? "" : ("in " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes "))
                     + ("age " + ageRound);
@@ -61,7 +61,7 @@ namespace ArtAi.Avatar
                     $"LabelCap={pawn.LabelCap} " + Environment.NewLine + //Noah<color=#999999FF>, Designer</color> 
                     $"TitleShortCap={TitleShortCapUntranslated(pawn)} " + Environment.NewLine + //Designer 
                     $"bodyType={pawn.story.bodyType.defName} " + Environment.NewLine + //Hulk, Thin, Fat
-                    $"HairColor={pawn.story.HairColor} {GetColorText(pawn.story.HairColor, HairColorMap)}" + Environment.NewLine +
+                    $"HairColor={pawn.story.HairColor} {GetHairColorText(pawn)}" + Environment.NewLine +
                     $"SkinColor={pawn.story.SkinColor} " + Environment.NewLine + //0.3882353
                     $"SkinColorBase={pawn.story.SkinColorBase} " + Environment.NewLine + //0.3882353
                     $"favoriteColor={pawn.story.favoriteColor} {GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap)}" + Environment.NewLine +
@@ -160,6 +160,33 @@ namespace ArtAi.Avatar
                 .ToList();
         }
 
+        private static string GetHairColorText(Pawn pawn)
+        {
+            var hairColor = pawn.story.HairColor;
+            // grey hair
+            // RimWorld.PawnHairColors.RandomGreyHairColor
+            if (pawn.ageTracker.AgeBiologicalYears > 40)
+            {
+                // ReSharper disable CompareOfFloatsByEqualityOperator
+                if (hairColor.r == hairColor.g && hairColor.g == hairColor.b)
+                {
+                    var colorComponent = hairColor.r;
+                    if (colorComponent >= 0.65f && colorComponent <= 0.85f)
+                    {
+                        return "grey";
+                    }
+                }
+            }
+            // gene hair
+            var hairColorGene = pawn.genes.GetHairColorGene();
+            if (hairColorGene != null)
+            {
+                return hairColorGene.label.Replace(" hair", "");
+            }
+            // custom hair
+            return GetColorText(hairColor, HairColorMap);
+        }
+
         private static string GetColorText(Color color, Dictionary<Color, string> map)
         {
             var bestKey = map.Keys
@@ -171,10 +198,10 @@ namespace ArtAi.Avatar
         private static Dictionary<Color, string> HairColorMap = new Dictionary<Color, string>()
         {
             { new Color(0.95f, 0.95f, 0.8f), "blond"},
-            { new Color(1f, 0.5f, 0.3f), "red"},
-            { new Color(0.6f, 0.36f, 0.25f), "red"},
+            { new Color(1f, 0.5f, 0.3f), "ginger"},
+            { new Color(0.6f, 0.36f, 0.25f), "auburn"},
             { new Color(0.5f, 0.27f, 0.07f), "brown"},
-            { new Color(0.1f, 0.1f, 0.1f), "brunette"},
+            { new Color(0.1f, 0.1f, 0.1f), "black"},
         };
 
         private static Dictionary<Color, string> FavoriteColorMap = new Dictionary<Color, string>()
