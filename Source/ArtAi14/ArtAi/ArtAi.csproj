@@ -38,11 +38,11 @@
       <HintPath>..\packages\Lib.Harmony.2.2.2\lib\net472\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>c:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="com.rlabrecque.steamworks.net">
-      <HintPath>c:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
+      <HintPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -53,19 +53,19 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>c:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>c:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>c:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>c:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -75,6 +75,7 @@
     <Compile Include="Avatar\DescriptionAvatar.cs" />
     <Compile Include="Avatar\Dialog_ShowImage.cs" />
     <Compile Include="Avatar\DrawPatch.cs" />
+    <Compile Include="Avatar\UntranslatedDefs.cs" />
     <Compile Include="data\Description.cs" />
     <Compile Include="data\GeneratedImage.cs" />
     <Compile Include="DescriptionCompArt.cs" />
