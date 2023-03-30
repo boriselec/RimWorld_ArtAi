@@ -26,9 +26,9 @@ namespace ArtAi.data
             return new GeneratedImage(GenerationStatus.InProgress, null, description);
         }
         
-        public static GeneratedImage Done(Texture2D texture)
+        public static GeneratedImage Done(Texture2D texture, String description)
         {
-            return new GeneratedImage(GenerationStatus.Done, texture, null);
+            return new GeneratedImage(GenerationStatus.Done, texture, description);
         }
 
         public static GeneratedImage Error()
@@ -38,7 +38,7 @@ namespace ArtAi.data
 
         public static GeneratedImage NeedGenerate()
         {
-            return new GeneratedImage(GenerationStatus.NeedGenerate, null, null);
+            return new GeneratedImage(GenerationStatus.NeedGenerate, null, "AiArtGizmoTooltip".Translate());
         }
 
         public bool NeedUpdate(bool withoutNewGenerate)

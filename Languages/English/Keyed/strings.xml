@@ -5,4 +5,5 @@
 	<AiArtTimeReaming>Approximate waiting time: </AiArtTimeReaming>
 	<AiArtLimit>Limit exceeded. Try later</AiArtLimit>
 	<AiArtError>Error</AiArtError>
+	<AiArtGizmoTooltip>Click to generate image</AiArtGizmoTooltip>
 </LanguageData>
