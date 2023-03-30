@@ -10,7 +10,8 @@ namespace ArtAi
         {
             var ArtDescription = compArt.GenerateImageDescription();
             var ThingDescription = compArt.parent.def.description;
-            return new Description(ArtDescription, ThingDescription, LanguageDatabase.activeLanguage.folderName);
+            var language = LanguageDatabase.activeLanguage.folderName;
+            return new Description(ArtDescription, ThingDescription, language, compArt.parent.ThingID);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace ArtAi
         {
             var rect1 = DrawHeader();
 
-            Description description = new Description(SelectedCompArt, LanguageDatabase.activeLanguage.folderName);
+            Description description = DescriptionCompArt.GetDescription(SelectedCompArt);
             var image = Generator.Generate(description);
             Draw(rect1, image);
         }
