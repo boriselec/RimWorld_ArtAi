@@ -68,7 +68,7 @@ namespace ArtAi
             var serverUrl = ArtAiSettings.ServerUrl;
             var request = WebRequest.Create(serverUrl);
             request.Method = "POST";
-            var postData = artDescription + ';' + thingDescription + ';' + steamAccountID + ';' + language;
+            var postData = Serialize(artDescription, thingDescription, steamAccountID, language);
             var byteArray = Encoding.UTF8.GetBytes(postData);
             request.ContentType = "text/plain";
             request.ContentLength = byteArray.Length;
@@ -78,6 +78,17 @@ namespace ArtAi
                 rqDataStream.Close();
             }
             return request;
+        }
+
+        private static string Serialize(string artDescription, string thingDescription, string steamAccountID,
+            string language)
+        {
+            const string delimiter = ";";
+            return string.Join(delimiter,
+                artDescription.Replace(delimiter, ""),
+                thingDescription.Replace(delimiter, ""),
+                steamAccountID.Replace(delimiter, ""),
+                language.Replace(delimiter, ""));
         }
 
         private static GeneratedImage ProcessResponse(Stream response, string contentType, Description description)
