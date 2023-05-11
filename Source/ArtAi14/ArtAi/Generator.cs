@@ -14,27 +14,40 @@ namespace ArtAi
     {
         private static readonly Dictionary<Description, GeneratedImage> _images
             = new Dictionary<Description, GeneratedImage>();
+        private static readonly Dictionary<Description, bool> _forcedRefresh
+            = new Dictionary<Description, bool>();
+
+        public static void setForcedRefresh(Description description)
+        {
+            _forcedRefresh[description] = true;
+        }
 
         public static GeneratedImage Generate(Description description, bool withoutNewGenerate = false)
         {
             GeneratedImage image = null;
-            if (_images.ContainsKey(description) && !(image = _images[description]).NeedUpdate(withoutNewGenerate))
-            {
-                return image;
-            }
-
             try
             {
-                var cached = ImageRepo.GetImage(description);
-                if (cached != null)
+                if (!_forcedRefresh.ContainsKey(description) || !_forcedRefresh[description])
                 {
-                    return image = GeneratedImage.Done(cached, description.ArtDescription);
+                    if (_images.ContainsKey(description) &&
+                        !(image = _images[description]).NeedUpdate(withoutNewGenerate))
+                    {
+                        return image;
+                    }
+
+                    var cached = ImageRepo.GetImage(description);
+                    if (cached != null)
+                    {
+                        return image = GeneratedImage.Done(cached, description.ArtDescription);
+                    }
+
+                    if (withoutNewGenerate)
+                    {
+                        if (_images.ContainsKey(description)) return _images[description];
+                        else return image = GeneratedImage.NeedGenerate();
+                    }
                 }
-                if (withoutNewGenerate)
-                {
-                    if (_images.ContainsKey(description)) return _images[description];
-                    else return image = GeneratedImage.NeedGenerate();
-                }
+
                 try
                 {
                     Log.Message("AI Art request");
@@ -58,7 +71,14 @@ namespace ArtAi
             }
             finally
             {
-                if (image != null) _images[description] = image;
+                if (image != null)
+                {
+                    _images[description] = image;
+                    if (image.Status == GenerationStatus.Done)
+                    {
+                        _forcedRefresh[description] = false;
+                    }
+                }
             }
         }
 

@@ -1,11 +1,6 @@
 ﻿using ArtAi.data;
 using RimWorld;
 using RimWorld.Planet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 
@@ -85,7 +80,7 @@ namespace ArtAi.Avatar
             return description;
         }
 
-        private static void Draw(Description description, Rect rect, Thing thing, WorldObject worldObject)
+        private static void Draw(Description description, Rect rect)
         {
             if (description.IsNull) return;
 
@@ -127,7 +122,12 @@ namespace ArtAi.Avatar
                     DoubleSize = !DoubleSize;
                     if (DoubleSize)
                     {
-                        Find.WindowStack.Add(new Dialog_ShowImage(image.Texture));
+                        void RefreshCallback()
+                        {
+                            Generator.setForcedRefresh(description);
+                            Draw(description, rect);
+                        }
+                        Find.WindowStack.Add(new Dialog_ShowImage(image.Texture, RefreshCallback));
                     }
                 }
             }
@@ -138,9 +138,9 @@ namespace ArtAi.Avatar
             }
         }
 
-        public static void Draw(Thing thing, Rect rect) => Draw(GetDescription(thing), rect, thing, null);
+        public static void Draw(Thing thing, Rect rect) => Draw(GetDescription(thing), rect);
 
-        public static void Draw(WorldObject worldObject, Rect rect) => Draw(GetDescription(worldObject), rect, null, worldObject);
+        public static void Draw(WorldObject worldObject, Rect rect) => Draw(GetDescription(worldObject), rect);
 
     }
 }
