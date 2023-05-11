@@ -33,7 +33,7 @@ namespace ArtAi.Avatar
 
             CompArt compArt = GetCompArt(thing);
             if (compArt != null && compArt.Active) return true;
-            if (thing is Pawn pawn && pawn.IsColonistPlayerControlled && !pawn.IsPrisoner && !pawn.IsSlave) return true;
+            if (thing is Pawn pawn && NeedDraw(pawn)) return true;
 
             //new features enter here
 
@@ -48,6 +48,14 @@ namespace ArtAi.Avatar
             return false;
         }
 
+        private static bool NeedDraw(Pawn pawn)
+        {
+            return pawn.Spawned
+                   && pawn.IsColonist
+                   && pawn.HostFaction == null
+                   && !pawn.IsPrisoner;
+        }
+
         private static Description GetDescription(Thing thing)
         {
             Description description = default;
@@ -57,7 +65,7 @@ namespace ArtAi.Avatar
             {
                 description = DescriptionCompArt.GetDescription(compArt);
             }
-            if (thing is Pawn pawn && pawn.IsColonistPlayerControlled && !pawn.IsPrisoner && !pawn.IsSlave)
+            if (thing is Pawn pawn && NeedDraw(pawn))
             {
                 description = DescriptionAvatar.GetByColonist(pawn);
             }
