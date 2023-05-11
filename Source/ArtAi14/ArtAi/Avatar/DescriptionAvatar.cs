@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -88,38 +89,30 @@ namespace ArtAi.Avatar
             var storyChildhood = story.Childhood;
             if (storyAdulthood != null)
             {
-                if (gender == Gender.Female && !storyAdulthood.untranslatedTitleShortFemale.NullOrEmpty())
-                {
-                    return storyAdulthood.untranslatedTitleShortFemale;
-                }
-                if (!storyAdulthood.untranslatedTitleShort.NullOrEmpty())
-                {
-                    return storyAdulthood.untranslatedTitleShort;
-                }
-                if (gender == Gender.Female && !storyAdulthood.untranslatedTitleFemale.NullOrEmpty())
-                {
-                    return storyAdulthood.untranslatedTitleFemale;
-                }
-                return storyAdulthood.untranslatedTitle;
+                return StoryTitleUntranslated(storyAdulthood, gender);
             }
             if (storyChildhood != null)
             {
-                if (gender == Gender.Female && storyChildhood.untranslatedTitleShortFemale.NullOrEmpty())
-                {
-                    return storyChildhood.untranslatedTitleShortFemale;
-                }
-                if (!storyChildhood.untranslatedTitleShort.NullOrEmpty())
-                {
-                    return storyChildhood.untranslatedTitleShort;
-                }
-
-                if (gender == Gender.Female && !storyChildhood.untranslatedTitleFemale.NullOrEmpty())
-                {
-                    return storyChildhood.untranslatedTitleFemale;
-                }
-                return storyChildhood.untranslatedTitle;
+                return StoryTitleUntranslated(storyChildhood, gender);
             }
             return "";
+        }
+
+        private static string StoryTitleUntranslated(BackstoryDef backstoryDef, Gender gender)
+        {
+            if (gender == Gender.Female && !backstoryDef.untranslatedTitleShortFemale.NullOrEmpty())
+            {
+                return backstoryDef.untranslatedTitleShortFemale;
+            }
+            if (!backstoryDef.untranslatedTitleShort.NullOrEmpty())
+            {
+                return backstoryDef.untranslatedTitleShort;
+            }
+            if (gender == Gender.Female && !backstoryDef.untranslatedTitleFemale.NullOrEmpty())
+            {
+                return backstoryDef.untranslatedTitleFemale;
+            }
+            return backstoryDef.untranslatedTitle;
         }
 
         private static List<string> AppearanceTraits(Pawn pawn)
