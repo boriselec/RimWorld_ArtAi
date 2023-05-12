@@ -9,15 +9,6 @@ namespace ArtAi.Avatar
     [StaticConstructorOnStartup]
     public static class AvatarDrawer
     {
-        public static bool DoubleSize
-        { 
-            get { return _doubleSize && !_activIconNeedUpdate; }
-            set { _doubleSize = value; }
-        }
-
-        private static bool _doubleSize = true;
-        private static bool _activIconNeedUpdate;
-
         private static CompArt GetCompArt(Thing thing) => thing == null ? null : thing.TryGetComp<CompArt>();
 
         private static readonly Texture2D Icon_Idle = ContentFinder<Texture2D>.Get("UI/Icons/ColonistBar/Idle");
@@ -105,7 +96,6 @@ namespace ArtAi.Avatar
 
             if (image.Status != GenerationStatus.Done)
             {
-                _activIconNeedUpdate = true;
                 var texture = image.Status == GenerationStatus.NeedGenerate ? TexButton.OpenInspector : Icon_Idle;
                 var width = 24f;
                 var dw2 = (rect.width - 24f) / 2f;
@@ -114,21 +104,16 @@ namespace ArtAi.Avatar
             }
             else
             {
-                _activIconNeedUpdate = false;
                 GUI.DrawTexture(rect, image.Texture);
 
                 if (click)
                 {
-                    DoubleSize = !DoubleSize;
-                    if (DoubleSize)
+                    void RefreshCallback()
                     {
-                        void RefreshCallback()
-                        {
-                            Generator.setForcedRefresh(description);
-                            Draw(description, rect);
-                        }
-                        Find.WindowStack.Add(new Dialog_ShowImage(image.Texture, RefreshCallback));
+                        Generator.setForcedRefresh(description);
+                        Draw(description, rect);
                     }
+                    Find.WindowStack.Add(new Dialog_ShowImage(image.Texture, RefreshCallback));
                 }
             }
 
