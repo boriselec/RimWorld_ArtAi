@@ -1,11 +1,6 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 using Verse.Steam;
@@ -47,7 +42,7 @@ namespace ArtAi.Avatar
             }
 
             var rect = GizmoGridButtonDrawStart(startX);
-            if (AvatarDrawer.DoubleSize)
+            if (ArtAiSettings.DoubleAvatarSize)
             {
                 rect.yMin -= rect.height + GizmoGridDrawer.GizmoSpacing.x;
                 rect.width = rect.height;
