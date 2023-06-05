@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using ArtAi.data;
 using RimWorld;
 using RimWorld.Planet;
@@ -109,7 +110,9 @@ namespace ArtAi.Avatar
 
             if (!string.IsNullOrEmpty(image.Description))
             {
-                TooltipHandler.TipRegion(rect, image.Description);
+                // remove imprecise age to not confuse player
+                string imageDescription = Regex.Replace(image.Description, @"age \d+", "").Trim();
+                TooltipHandler.TipRegion(rect, imageDescription);
             }
         }
 
