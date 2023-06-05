@@ -42,15 +42,9 @@ namespace ArtAi.Avatar
             }
 
             var rect = GizmoGridButtonDrawStart(startX);
-            if (ArtAiSettings.DoubleAvatarSize)
-            {
-                rect.yMin -= rect.height + GizmoGridDrawer.GizmoSpacing.x;
-                rect.width = rect.height;
-            }
-            startX += GizmoGridDrawer.GizmoSpacing.x + rect.width;
 
-            if (selectedWorldObject != null) AvatarDrawer.Draw(selectedWorldObject, rect);
-            if (selectedThing != null) AvatarDrawer.Draw(selectedThing, rect);
+            if (selectedWorldObject != null) AvatarDrawer.Draw(selectedWorldObject, rect, ref startX);
+            if (selectedThing != null) AvatarDrawer.Draw(selectedThing, rect, ref startX);
 
             GenUI.AbsorbClicksInRect(rect);
 
