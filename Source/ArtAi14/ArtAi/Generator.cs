@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -12,73 +11,27 @@ namespace ArtAi
 {
     public abstract class Generator
     {
-        private static readonly Dictionary<Description, GeneratedImage> _images
-            = new Dictionary<Description, GeneratedImage>();
-        private static readonly Dictionary<Description, bool> _forcedRefresh
-            = new Dictionary<Description, bool>();
-
-        public static void setForcedRefresh(Description description)
+        public static GeneratedImage Generate(Description description)
         {
-            _forcedRefresh[description] = true;
-        }
-
-        public static GeneratedImage Generate(Description description, bool withoutNewGenerate = false)
-        {
-            GeneratedImage image = null;
             try
             {
-                if (!_forcedRefresh.ContainsKey(description) || !_forcedRefresh[description])
+                Log.Message("AI Art request");
+                var steamAccountID = SteamAccountID();
+                var request = MakeRequest(description.ArtDescription, description.ThingDescription,
+                    steamAccountID, description.Language);
+
+                using (var response = request.GetResponse())
                 {
-                    if (_images.ContainsKey(description) &&
-                        !(image = _images[description]).NeedUpdate(withoutNewGenerate))
+                    using (var rsDataStream = response.GetResponseStream())
                     {
-                        return image;
+                        return ProcessResponse(rsDataStream, response.ContentType, description);
                     }
-
-                    var cached = ImageRepo.GetImage(description);
-                    if (cached != null)
-                    {
-                        return image = GeneratedImage.Done(cached, description.ArtDescription);
-                    }
-
-                    if (withoutNewGenerate)
-                    {
-                        if (_images.ContainsKey(description)) return _images[description];
-                        else return image = GeneratedImage.NeedGenerate();
-                    }
-                }
-
-                try
-                {
-                    Log.Message("AI Art request");
-                    var steamAccountID = SteamAccountID();
-                    var request = MakeRequest(description.ArtDescription, description.ThingDescription,
-                        steamAccountID, description.Language);
-
-                    using (var response = request.GetResponse())
-                    {
-                        using (var rsDataStream = response.GetResponseStream())
-                        {
-                            return image = ProcessResponse(rsDataStream, response.ContentType, description);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e.Message);
-                    return image = GeneratedImage.Error();
                 }
             }
-            finally
+            catch (Exception e)
             {
-                if (image != null)
-                {
-                    _images[description] = image;
-                    if (image.Status == GenerationStatus.Done)
-                    {
-                        _forcedRefresh[description] = false;
-                    }
-                }
+                Log.Error(e.Message);
+                return GeneratedImage.Error();
             }
         }
 
@@ -97,6 +50,7 @@ namespace ArtAi
                 rqDataStream.Write(byteArray, 0, byteArray.Length);
                 rqDataStream.Close();
             }
+
             return request;
         }
 
@@ -133,7 +87,6 @@ namespace ArtAi
                     {
                         response.CopyTo(ms);
                         var array = ms.ToArray();
-                        ImageRepo.SaveImage(array, description);
                         Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
                         tex.LoadImage(array);
                         tex.Apply();
@@ -148,6 +101,7 @@ namespace ArtAi
         {
             const string queued = "Queued: ";
             const int approximateGenerationTimeSeconds = 30;
+
             if (responseFromServer.Contains(queued))
             {
                 string queuePos = responseFromServer.Substring(responseFromServer.IndexOf(queued) + queued.Length);
@@ -156,6 +110,7 @@ namespace ArtAi
                        + Environment.NewLine + Environment.NewLine +
                        "AiArtTimeReaming".Translate() + TimeSpan.FromSeconds(waitTimeSeconds).ToString();
             }
+
             if (responseFromServer.Contains("Try later"))
             {
                 return "AiArtLimit".Translate();

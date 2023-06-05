@@ -80,11 +80,14 @@
     <Compile Include="Avatar\Dialog_ShowImage.cs" />
     <Compile Include="Avatar\DrawPatch.cs" />
     <Compile Include="Avatar\UntranslatedDefs.cs" />
+    <Compile Include="CachedImageRepo.cs" />
+    <Compile Include="data\CachedImage.cs" />
     <Compile Include="data\Description.cs" />
     <Compile Include="data\GeneratedImage.cs" />
     <Compile Include="DescriptionCompArt.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="ImageRepo.cs" />
+    <Compile Include="ImageService.cs" />
     <Compile Include="ITab_Art_Generated.cs" />
     <Compile Include="StringUtil.cs" />
   </ItemGroup>

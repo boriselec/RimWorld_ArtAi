@@ -12,12 +12,29 @@ namespace ArtAi
     {
         private static readonly string RepoPath = Path.Combine(GenFilePaths.SaveDataFolderPath, "AiArt");
 
-        public static Texture2D GetImage(Description description)
+        // Get image for thing that matches description exactly
+        public static Texture2D GetExactImage(Description description)
+        {
+            return GetImage(thingDir => GetExactFile(thingDir, description), description.ThingId);
+        }
+
+        // Get last generated image for thing 
+        public static Texture2D GetLastGeneratedImage(string thingId)
+        {
+            return GetImage(GetLastModifiedFile, thingId);
+        }
+
+        private static Texture2D GetImage(Func<VirtualDirectory, VirtualFile> fileSupplier, string thingId)
         {
             try
             {
-                VirtualDirectory virtualDirectory = AbstractFilesystem.GetDirectory(RepoPath);
-                VirtualFile virtualFile = GetLastModifiedFile(virtualDirectory, description);
+                var thingDir = AbstractFilesystem.GetDirectory(RepoPath)
+                    .GetDirectory(thingId);
+                if (!thingDir.Exists)
+                {
+                    return null;
+                }
+                VirtualFile virtualFile = fileSupplier.Invoke(thingDir);
                 
                 if (virtualFile != null)
                 {
@@ -31,14 +48,14 @@ namespace ArtAi
             return null;
         }
 
-        private static VirtualFile GetLastModifiedFile(VirtualDirectory imageDir, Description description)
+        private static VirtualFile GetExactFile(VirtualDirectory thingDir, Description description)
         {
-            var thingDir = imageDir.GetDirectory(description.ThingId);
-            return (thingDir.Exists
-                    ? thingDir.GetFiles("*png", SearchOption.TopDirectoryOnly)
-                    : Enumerable.Empty<VirtualFile>())
-                // legacy path
-                .Concat(Enumerable.Repeat(imageDir.GetFile(GetImageFileName(description, RepoPath)), 1))
+            return thingDir.GetFile(GetImageFileName(description, thingDir.FullPath));
+        }
+
+        private static VirtualFile GetLastModifiedFile(VirtualDirectory thingDir)
+        {
+            return thingDir.GetFiles("*png", SearchOption.TopDirectoryOnly)
                 .Where(f => f.Exists)
                 .OrderByDescending(f => new FileInfo(f.FullPath).LastWriteTime)
                 .FirstOrFallback();

@@ -1,4 +1,5 @@
-﻿using ArtAi.data;
+﻿using System;
+using ArtAi.data;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace ArtAi.Avatar
     [StaticConstructorOnStartup]
     public static class AvatarDrawer
     {
-        private static CompArt GetCompArt(Thing thing) => thing == null ? null : thing.TryGetComp<CompArt>();
+        private static CompArt GetCompArt(Thing thing) => thing?.TryGetComp<CompArt>();
 
         private static readonly Texture2D Icon_Idle = ContentFinder<Texture2D>.Get("UI/Icons/ColonistBar/Idle");
 
@@ -28,7 +29,6 @@ namespace ArtAi.Avatar
 
         public static bool NeedDraw(WorldObject worldObject)
         {
-
             //new features enter here
 
             return false;
@@ -51,6 +51,7 @@ namespace ArtAi.Avatar
             {
                 description = DescriptionCompArt.GetDescription(compArt);
             }
+
             if (thing is Pawn pawn && NeedDraw(pawn))
             {
                 description = DescriptionAvatar.GetByColonist(pawn);
@@ -75,47 +76,36 @@ namespace ArtAi.Avatar
         {
             if (description.IsNull) return;
 
-            var image = Generator.Generate(description, true);
-            if (image.Status == GenerationStatus.InProgress)
-            {
-                image = Generator.Generate(description);
-            }
-            var click = false;
-            if (Widgets.ButtonInvisible(rect))
-            {
-                if (image.Status == GenerationStatus.NeedGenerate)
-                {
-                    image = Generator.Generate(description);
-                }
-                else
-                    click = true;
-            }
-
-            GUI.DrawTexture(rect, Command.BGTexShrunk); //BGTex);
+            GUI.DrawTexture(rect, Command.BGTexShrunk);
             rect = rect.ContractedBy(2);
 
-            if (image.Status != GenerationStatus.Done)
-            {
-                var texture = image.Status == GenerationStatus.NeedGenerate ? TexButton.OpenInspector : Icon_Idle;
-                var width = 24f;
-                var dw2 = (rect.width - 24f) / 2f;
-                var dh2 = (rect.height - 24f) / 2f;
-                GUI.DrawTexture(new Rect(rect.x + dw2, rect.y + dh2, width, width), texture);
-            }
-            else
-            {
-                GUI.DrawTexture(rect, image.Texture);
+            var image = ImageService.Get(description);
 
-                if (click)
+            if (Widgets.ButtonInvisible(rect))
+            {
+                switch (image.Status)
                 {
-                    void RefreshCallback()
-                    {
-                        Generator.setForcedRefresh(description);
-                        Draw(description, rect);
-                    }
-                    Find.WindowStack.Add(new Dialog_ShowImage(image.Texture, RefreshCallback));
+                    // click on done image -> show dialog window
+                    case GenerationStatus.Done:
+                        var dialogWindow = new Dialog_ShowImage(
+                            image.Texture,
+                            () => image = ImageService.ForceRefresh(description));
+                        Find.WindowStack.Add(dialogWindow);
+                        break;
+                    // click on empty image -> start generation
+                    case GenerationStatus.NeedGenerate:
+                        image = ImageService.GetOrGenerate(description);
+                        break;
                 }
             }
+
+            // in progress image can be outdated
+            if (image.Status == GenerationStatus.InProgress)
+            {
+                image = ImageService.GetOrGenerate(description);
+            }
+
+            Draw(rect, image);
 
             if (!string.IsNullOrEmpty(image.Description))
             {
@@ -123,9 +113,37 @@ namespace ArtAi.Avatar
             }
         }
 
+        private static void Draw(Rect rect, GeneratedImage image)
+        {
+            switch (image.Status)
+            {
+                case GenerationStatus.Done:
+                    GUI.DrawTexture(rect, image.Texture);
+                    break;
+
+                case GenerationStatus.InProgress:
+                    DrawButton(rect, Icon_Idle);
+                    break;
+
+                case GenerationStatus.NeedGenerate:
+                    DrawButton(rect, TexButton.OpenInspector);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static void DrawButton(Rect rect, Texture texture)
+        {
+            var width = 24f;
+            var dw2 = (rect.width - 24f) / 2f;
+            var dh2 = (rect.height - 24f) / 2f;
+            GUI.DrawTexture(new Rect(rect.x + dw2, rect.y + dh2, width, width), texture);
+        }
+
         public static void Draw(Thing thing, Rect rect) => Draw(GetDescription(thing), rect);
 
         public static void Draw(WorldObject worldObject, Rect rect) => Draw(GetDescription(worldObject), rect);
-
     }
 }
