@@ -76,7 +76,7 @@ namespace ArtAi.Avatar
 #endif
             }
 
-            var thingDesc = "beautiful portrait of a human";
+            var thingDesc = "beautiful photorealistic portrait of a human";
             return new Description(appearance, thingDesc, LanguageDatabase.DefaultLangFolderName, pawn.ThingID);
         }
 
