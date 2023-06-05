@@ -33,7 +33,7 @@ namespace ArtAi
             var rect1 = DrawHeader();
 
             Description description = DescriptionCompArt.GetDescription(SelectedCompArt);
-            var image = Generator.Generate(description);
+            var image = ImageService.GetOrGenerate(description);
             Draw(rect1, image);
         }
 
@@ -50,20 +50,14 @@ namespace ArtAi
         {
             Rect rect3 = rect1;
             rect3.yMin += 35f;
-            switch (image.Status)
+            if (image.Status == GenerationStatus.Done)
             {
-                case GenerationStatus.Done:
-                    GUI.DrawTexture(rect3, image.Texture, ScaleMode.ScaleToFit);
-                    break;
-                case GenerationStatus.InProgress:
-                    Text.Font = GameFont.Small;
-                    Widgets.Label(rect3, image.Description);
-                    break;
-                case GenerationStatus.Error:
-                default:
-                    Text.Font = GameFont.Small;
-                    Widgets.Label(rect3, image.Description);
-                    break;
+                GUI.DrawTexture(rect3, image.Texture, ScaleMode.ScaleToFit);
+            }
+            else
+            {
+                Text.Font = GameFont.Small;
+                Widgets.Label(rect3, image.Description);
             }
         }
     }
