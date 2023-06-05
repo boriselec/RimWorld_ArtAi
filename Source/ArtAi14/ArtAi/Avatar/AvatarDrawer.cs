@@ -73,14 +73,21 @@ namespace ArtAi.Avatar
             return description;
         }
 
-        private static void Draw(Description description, Rect rect)
+        private static void Draw(Description description, Rect rect, ref float startX)
         {
             if (description.IsNull) return;
 
+            var image = ImageService.Get(description);
+
+            if (ArtAiSettings.DoubleAvatarSize && image.Status == GenerationStatus.Done)
+            {
+                rect.yMin -= rect.height + GizmoGridDrawer.GizmoSpacing.x;
+                rect.width = rect.height;
+            }
+            startX += GizmoGridDrawer.GizmoSpacing.x + rect.width;
+
             GUI.DrawTexture(rect, Command.BGTexShrunk);
             rect = rect.ContractedBy(2);
-
-            var image = ImageService.Get(description);
 
             if (Widgets.ButtonInvisible(rect))
             {
@@ -145,8 +152,14 @@ namespace ArtAi.Avatar
             GUI.DrawTexture(new Rect(rect.x + dw2, rect.y + dh2, width, width), texture);
         }
 
-        public static void Draw(Thing thing, Rect rect) => Draw(GetDescription(thing), rect);
+        public static void Draw(Thing thing, Rect rect, ref float startX)
+        {
+            Draw(GetDescription(thing), rect, ref startX);
+        }
 
-        public static void Draw(WorldObject worldObject, Rect rect) => Draw(GetDescription(worldObject), rect);
+        public static void Draw(WorldObject worldObject, Rect rect, ref float startX)
+        {
+            Draw(GetDescription(worldObject), rect, ref startX);
+        }
     }
 }
