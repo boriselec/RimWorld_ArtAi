@@ -216,7 +216,6 @@ namespace ArtAi.Avatar
             { new Color(0f/255f, 255f/255f, 255f/255f), "aqua"},
             { new Color(0f/255f, 128f/255f, 128f/255f), "teal"},
             { new Color(0f/255f, 0f/255f, 255f/255f), "blue"},
-            { new Color(0f/255f, 0f/255f, 128f/255f), "navy"},
         };
 
         static DescriptionAvatar()
