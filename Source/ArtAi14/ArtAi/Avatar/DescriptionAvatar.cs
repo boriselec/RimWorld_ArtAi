@@ -85,9 +85,10 @@ namespace ArtAi.Avatar
             switch (pawn.genes.Xenotype.defName)
             {
                 case "Neanderthal":
-                case "Impid":
                     // as is
                     return pawn.genes.Xenotype.defName;
+                case "Impid":
+                    return "two-horned imp";
                 case "Sanguophage":
                     return "vampire";
                 case "Waster":
