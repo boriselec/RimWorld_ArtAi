@@ -190,7 +190,16 @@ namespace ArtAi.Avatar
                 }
             }
             // gene hair
-            var hairColorGene = pawn.genes.GetHairColorGene();
+            GeneDef hairColorGene = null;
+            List<Gene> genesListForReading = pawn.genes.GenesListForReading;
+            foreach (var gene in genesListForReading)
+            {
+                if (gene.def.endogeneCategory == EndogeneCategory.HairColor)
+                {
+                    hairColorGene = gene.Overridden ? gene.overriddenByGene.def : gene.def;
+                    break;
+                }
+            }
             if (hairColorGene != null)
             {
                 return UntranslatedDefs.Labels.TryGetValue(hairColorGene.defName, hairColorGene.label)
