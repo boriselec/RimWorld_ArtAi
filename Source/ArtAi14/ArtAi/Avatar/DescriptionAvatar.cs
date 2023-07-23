@@ -42,8 +42,8 @@ namespace ArtAi.Avatar
                         : "")
                     + string.Join(" ", appearanceTraits) + " "
                     + (age >= 12 && age < 18 ? "teenager " : "")
-                    + (pawn.gender == Gender.Female && ageRound < 25 ? "girl "
-                        : pawn.gender == Gender.Female && ageRound >= 25 ? "woman "
+                    + (pawn.gender == Gender.Female && ageRound < 18 ? "girl "
+                        : pawn.gender == Gender.Female && ageRound >= 18 ? "woman "
                         : pawn.gender == Gender.Male && ageRound < 18 ? "boy "
                         : pawn.gender == Gender.Male && ageRound >= 18 ? "male "
                         : "")
