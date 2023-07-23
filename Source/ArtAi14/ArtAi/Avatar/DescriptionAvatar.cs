@@ -41,7 +41,7 @@ namespace ArtAi.Avatar
                         : bodyType == "Fat" ? "fat "
                         : "")
                     + string.Join(" ", appearanceTraits) + " "
-                    + (age >= 12 && age < 18 ? "teenager " : "")
+                    + (age >= 13 && age < 18 ? "teenager " : "")
                     + (pawn.gender == Gender.Female && ageRound < 18 ? "girl "
                         : pawn.gender == Gender.Female && ageRound >= 18 ? "woman "
                         : pawn.gender == Gender.Male && ageRound < 18 ? "boy "
