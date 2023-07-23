@@ -76,8 +76,26 @@ namespace ArtAi.Avatar
 #endif
             }
 
-            var thingDesc = "beautiful photorealistic portrait of a human";
+            var thingDesc = "beautiful photorealistic portrait of a " + Race(pawn);
             return new Description(appearance, thingDesc, LanguageDatabase.DefaultLangFolderName, pawn.ThingID);
+        }
+
+        private static string Race(Pawn pawn)
+        {
+            switch (pawn.genes.Xenotype.defName)
+            {
+                case "Neanderthal":
+                case "Impid":
+                    // as is
+                    return pawn.genes.Xenotype.defName;
+                case "Sanguophage":
+                    return "vampire";
+                case "Waster":
+                    // wasters are basically ghouls: unattractive gray-skinned post-apocalyptic human-like creatures
+                    return "ghoul";
+                default:
+                    return "human";
+            }
         }
 
         // copy of Pawn_StoryTracker#TitleShortCap with no translation
