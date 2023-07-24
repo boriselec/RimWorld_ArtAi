@@ -48,7 +48,7 @@ namespace ArtAi.Avatar
                         : pawn.gender == Gender.Male && ageRound >= 18 ? "male "
                         : "")
                     + TitleShortCapUntranslated(pawn) + " "
-                    + (pawn.story.SkinColorBase.r > 0.5f ? "light-skinned " : "dark-skinned ")
+                    + SkinColor(pawn) + " "
                     + (hairBald ? "bald " : "with " + (hairMid ? "shoulder-length " : hairLong ? "long " : "short ") + GetHairColorText(pawn) + " hair ")
                     + (pawn.gender == Gender.Female ? "" : pawn.style.beardDef.defName == "NoBeard" ? "clean-shaven " : "with beard ")
                     + (pawn.story.favoriteColor == null ? "" : ("wearing " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes "))
@@ -78,6 +78,23 @@ namespace ArtAi.Avatar
 
             var thingDesc = "beautiful photorealistic portrait of a " + Race(pawn);
             return new Description(appearance, thingDesc, LanguageDatabase.DefaultLangFolderName, pawn.ThingID);
+        }
+
+        private static string SkinColor(Pawn pawn)
+        {
+            foreach (var gene in pawn.genes.GenesListForReading)
+            {
+                if (gene.def.displayCategory.defName == "Cosmetic_Skin")
+                {
+                    var geneLabel = GetGeneLabel(gene);
+                    if (geneLabel.EndsWith("skin"))
+                    {
+                        // eg blue skinned
+                        return geneLabel + "ned";
+                    }
+                }
+            }
+            return pawn.story.SkinColorBase.r > 0.5f ? "light-skinned" : "dark-skinned";
         }
 
         private static string Race(Pawn pawn)
@@ -192,23 +209,22 @@ namespace ArtAi.Avatar
                 }
             }
             // gene hair
-            GeneDef hairColorGene = null;
-            List<Gene> genesListForReading = pawn.genes.GenesListForReading;
-            foreach (var gene in genesListForReading)
+            foreach (var gene in pawn.genes.GenesListForReading)
             {
                 if (gene.def.endogeneCategory == EndogeneCategory.HairColor)
                 {
-                    hairColorGene = gene.Overridden ? gene.overriddenByGene.def : gene.def;
-                    break;
+                    return GetGeneLabel(gene)
+                        .Replace(" hair", "");
                 }
-            }
-            if (hairColorGene != null)
-            {
-                return UntranslatedDefs.Labels.TryGetValue(hairColorGene.defName, hairColorGene.label)
-                    .Replace(" hair", "");
             }
             // custom hair
             return GetColorText(hairColor, HairColorMap);
+        }
+
+        private static string GetGeneLabel(Gene gene)
+        {
+            Gene mainGene = gene.Overridden ? gene.overriddenByGene : gene;
+            return UntranslatedDefs.Labels.TryGetValue(mainGene.def.defName, gene.def.label);
         }
 
         private static string GetColorText(Color color, Dictionary<Color, string> map)
