@@ -51,7 +51,7 @@ namespace ArtAi.Avatar
                     + (pawn.story.SkinColorBase.r > 0.5f ? "light-skinned " : "dark-skinned ")
                     + (hairBald ? "bald " : "with " + (hairMid ? "shoulder-length " : hairLong ? "long " : "short ") + GetHairColorText(pawn) + " hair ")
                     + (pawn.gender == Gender.Female ? "" : pawn.style.beardDef.defName == "NoBeard" ? "clean-shaven " : "with beard ")
-                    + (pawn.story.favoriteColor == null ? "" : ("in " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes "))
+                    + (pawn.story.favoriteColor == null ? "" : ("wearing " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes "))
                     + ("age " + ageRound);
                 ColonistAppearance[pawn.thingIDNumber] = appearance;
 
