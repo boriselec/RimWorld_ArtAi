@@ -94,6 +94,8 @@ namespace ArtAi.Avatar
                 case "Waster":
                     // wasters are basically ghouls: unattractive gray-skinned post-apocalyptic human-like creatures
                     return "ghoul";
+                case "Dirtmole":
+                    return "blind human with cataracts";
                 default:
                     return "human";
             }
