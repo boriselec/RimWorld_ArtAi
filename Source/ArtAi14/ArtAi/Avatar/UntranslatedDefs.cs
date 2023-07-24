@@ -17,7 +17,6 @@ namespace ArtAi.Avatar
         static void Prefix()
         {
             Labels = DefDatabase<GeneDef>.AllDefs
-                .Where(x => x.hairColorOverride.HasValue)
                 .ToDictionary(x => x.defName, x => x.label);
         }
     }
