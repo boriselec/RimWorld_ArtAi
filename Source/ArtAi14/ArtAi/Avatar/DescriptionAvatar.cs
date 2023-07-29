@@ -109,6 +109,8 @@ namespace ArtAi.Avatar
                     return "blind human with cataracts";
                 case "Yttakin":
                     return "animal furry";
+                case "Hussar":
+                    //todo: only relevant feature of hussars is red eyes, but ai for some reason bad at generating eyes
                 default:
                     return "human";
             }
