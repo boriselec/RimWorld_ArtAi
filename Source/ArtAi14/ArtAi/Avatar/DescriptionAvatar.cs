@@ -28,11 +28,6 @@ namespace ArtAi.Avatar
                     : age < 25 ? 18
                     : age < 60 ? 25
                     : 60;
-                var hairstyles = pawn.story.hairDef.styleTags;
-                var hairShort = hairstyles.Contains("HairShort");
-                var hairLong = hairstyles.Contains("HairLong");
-                var hairMid = !(hairShort ^ hairLong);
-                var hairBald = hairstyles.Contains("Shaved") || hairstyles.Any(s => s.Contains("Bald"));
                 var appearanceTraits = AppearanceTraits(pawn);
 
                 appearance =
@@ -49,8 +44,7 @@ namespace ArtAi.Avatar
                         : "")
                     + TitleShortCapUntranslated(pawn) + " "
                     + SkinColor(pawn) + " "
-                    + (hairBald ? "bald " : "with " + (hairMid ? "shoulder-length " : hairLong ? "long " : "short ") + GetHairColorText(pawn) + " hair ")
-                    + (pawn.genes.CanHaveBeard ? pawn.style.beardDef.defName == "NoBeard" ? "clean-shaven " : "with beard " : "")
+                    + GetFacialAndHeadHair(pawn)
                     + (pawn.story.favoriteColor == null ? "" : ("wearing " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes "))
                     + ("age " + ageRound);
                 ColonistAppearance[pawn.thingIDNumber] = appearance;
@@ -113,6 +107,8 @@ namespace ArtAi.Avatar
                     return "ghoul";
                 case "Dirtmole":
                     return "blind human with cataracts";
+                case "Yttakin":
+                    return "animal furry";
                 default:
                     return "human";
             }
@@ -189,6 +185,29 @@ namespace ArtAi.Avatar
                 .Select(t => t.CurrentData.untranslatedLabel)
                 .Take(3)
                 .ToList();
+        }
+
+        private static string GetFacialAndHeadHair(Pawn pawn)
+        {
+            var hairstyles = pawn.story.hairDef.styleTags;
+            bool hairShort = hairstyles.Contains("HairShort");
+            bool hairLong = hairstyles.Contains("HairLong");
+            bool hairMid = !(hairShort ^ hairLong);
+            bool hairBald = hairstyles.Contains("Shaved") || hairstyles.Any(s => s.Contains("Bald"));
+
+            string hairLength = hairMid ? "shoulder-length " : hairLong ? "long " : "short ";
+            string hairColor = GetHairColorText(pawn);
+            string hair = hairBald
+                ? "bald"
+                : "with " + hairLength + hairColor + " hair";
+            // specify beard color only if bald. otherwise it should be deducted by model from hair color
+            string beardColor = hairBald ? hairColor + " " : "";
+            string beardOrShaven = pawn.style.beardDef.defName == "NoBeard"
+                ? "clean-shaven ":
+                "with " + beardColor + "beard ";
+            string facialHair = pawn.genes.CanHaveBeard ? beardOrShaven : "";
+
+            return hair + " " + facialHair;
         }
 
         private static string GetHairColorText(Pawn pawn)
