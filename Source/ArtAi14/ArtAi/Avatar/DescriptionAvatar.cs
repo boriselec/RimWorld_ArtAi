@@ -213,7 +213,7 @@ namespace ArtAi.Avatar
         private static string GetHairColorText(Pawn pawn)
         {
             var hairColor = pawn.story.HairColor;
-            // grey hair
+            // gray hair
             // RimWorld.PawnHairColors.RandomGreyHairColor
             if (pawn.ageTracker.AgeBiologicalYears > 40)
             {
@@ -223,7 +223,7 @@ namespace ArtAi.Avatar
                     var colorComponent = hairColor.r;
                     if (colorComponent >= 0.65f && colorComponent <= 0.85f)
                     {
-                        return "grey";
+                        return "gray";
                     }
                 }
             }
