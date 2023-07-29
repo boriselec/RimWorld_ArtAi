@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -22,37 +23,28 @@ namespace ArtAi.Avatar
             }
             if (!ColonistAppearance.TryGetValue(pawn.thingIDNumber, out var appearance))
             {
-                var bodyType = pawn.story.bodyType.defName;
-                var age = pawn.ageTracker.AgeBiologicalYears;
-                var ageRound = age < 18 ? 12
-                    : age < 25 ? 18
-                    : age < 60 ? 25
-                    : 60;
-
-                appearance =
-                    Race(pawn) + " " +
-                    (bodyType == "Hulk" ? "inflated physique " // brawny ?
-                        : bodyType == "Thin" ? "thin "
-                        : bodyType == "Fat" ? "fat "
-                        : "")
-                    + AppearanceTraits(pawn)
-                    + (age >= 13 && age < 18 ? "teenager " : "")
-                    + (pawn.gender == Gender.Female && ageRound < 18 ? "girl "
-                        : pawn.gender == Gender.Female && ageRound >= 18 ? "woman "
-                        : pawn.gender == Gender.Male && ageRound < 18 ? "boy "
-                        : pawn.gender == Gender.Male && ageRound >= 18 ? "male "
-                        : "")
-                    + TitleShortCapUntranslated(pawn) + " "
+                appearance = Normalize(
+                    Race(pawn) + " "
+                    + BodyType(pawn) + " "
+                    + AppearanceTraits(pawn) + " "
+                    + AgeTerms(pawn) + " "
+                    + Story(pawn) + " "
                     + SkinColor(pawn) + " "
-                    + GetFacialAndHeadHair(pawn)
-                    + (pawn.story.favoriteColor == null ? ""
-                        : "wearing " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes ")
-                    + ("age " + ageRound);
+                    + GetFacialAndHeadHair(pawn) + " "
+                    + Clothes(pawn) + " "
+                    + AgeRound(pawn));
                 ColonistAppearance[pawn.thingIDNumber] = appearance;
             }
 
             var thingDesc = "beautiful photorealistic portrait of a";
             return new Description(appearance, thingDesc, LanguageDatabase.DefaultLangFolderName, pawn.ThingID);
+        }
+
+        private static string Normalize(string text)
+        {
+            return
+                Regex.Replace(text, @"\s+", " ") // delete multiple spaces
+                    .ToLower();                  // to lowercase characters
         }
 
         private static string SkinColor(Pawn pawn)
@@ -102,8 +94,40 @@ namespace ArtAi.Avatar
             }
         }
 
+        private static string BodyType(Pawn pawn)
+        {
+            var bodyType = pawn.story.bodyType.defName;
+            return bodyType == "Hulk" ? "inflated physique" // brawny ?
+                : bodyType == "Thin" ? "thin"
+                : bodyType == "Fat" ? "fat"
+                : "";
+        }
+
+        private static string AgeTerms(Pawn pawn)
+        {
+            int age = pawn.ageTracker.AgeBiologicalYears;
+            return 
+                pawn.gender == Gender.Female && age < 13 ? "girl"
+                : pawn.gender == Gender.Female && age >= 13 && age < 18 ? "teenager girl"
+                : pawn.gender == Gender.Female && age >= 18 ? "woman"
+                : pawn.gender == Gender.Male && age < 13 ? "boy"
+                : pawn.gender == Gender.Male && age >= 13 && age < 18 ? "teenager boy"
+                : pawn.gender == Gender.Male && age >= 18 ? "male"
+                : "";
+        }
+
+        private static string AgeRound(Pawn pawn)
+        {
+            var age = pawn.ageTracker.AgeBiologicalYears;
+            var ageRound = age < 18 ? 12
+                : age < 25 ? 18
+                : age < 60 ? 25
+                : 60;
+            return "age " + ageRound;
+        }
+
         // copy of Pawn_StoryTracker#TitleShortCap with no translation
-        private static string TitleShortCapUntranslated(Pawn pawn)
+        private static string Story(Pawn pawn)
         {
             var story = pawn.story;
             var gender = pawn.gender;
@@ -139,7 +163,7 @@ namespace ArtAi.Avatar
 
         private static string AppearanceTraits(Pawn pawn)
         {
-            List<string> result = pawn.story.traits.allTraits
+            return pawn.story.traits.allTraits
                 .OrderByDescending(t =>
                 {
                     switch (t.def.defName)
@@ -172,9 +196,13 @@ namespace ArtAi.Avatar
                 .Where(t => !"Nudist".Equals(t.def.defName) || pawn.ageTracker.AgeBiologicalYears >= 18)
                 .Select(t => t.CurrentData.untranslatedLabel)
                 .Take(3)
-                .ToList();
+                .Aggregate("", (a, b) => a + " " + b);
+        }
 
-            return result.Any() ? string.Join(" ", result) + " " : "";
+        private static string Clothes(Pawn pawn)
+        {
+            return pawn.story.favoriteColor == null ? ""
+                : "wearing " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes";
         }
 
         private static string GetFacialAndHeadHair(Pawn pawn)
@@ -185,16 +213,16 @@ namespace ArtAi.Avatar
             bool hairMid = !(hairShort ^ hairLong);
             bool hairBald = hairstyles.Contains("Shaved") || hairstyles.Any(s => s.Contains("Bald"));
 
-            string hairLength = hairMid ? "shoulder-length " : hairLong ? "long " : "short ";
+            string hairLength = hairMid ? "shoulder-length" : hairLong ? "long" : "short";
             string hairColor = GetHairColorText(pawn);
             string hair = hairBald
                 ? "bald"
-                : "with " + hairLength + hairColor + " hair";
+                : "with " + hairLength + " " + hairColor + " hair";
             // specify beard color only if bald. otherwise it should be deducted by model from hair color
-            string beardColor = hairBald ? hairColor + " " : "";
+            string beardColor = hairBald ? hairColor : "";
             string beardOrShaven = pawn.style.beardDef.defName == "NoBeard"
-                ? "clean-shaven ":
-                "with " + beardColor + "beard ";
+                ? "clean-shaven"
+                : "with " + beardColor + " beard";
             string facialHair = pawn.genes.CanHaveBeard ? beardOrShaven : "";
 
             return hair + " " + facialHair;
