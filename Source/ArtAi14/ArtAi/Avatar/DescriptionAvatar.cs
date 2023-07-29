@@ -31,6 +31,7 @@ namespace ArtAi.Avatar
                 var appearanceTraits = AppearanceTraits(pawn);
 
                 appearance =
+                    Race(pawn) + " " +
                     (bodyType == "Hulk" ? "inflated physique " // brawny ?
                         : bodyType == "Thin" ? "thin "
                         : bodyType == "Fat" ? "fat "
@@ -70,7 +71,7 @@ namespace ArtAi.Avatar
 #endif
             }
 
-            var thingDesc = "beautiful photorealistic portrait of a " + Race(pawn);
+            var thingDesc = "beautiful photorealistic portrait of a";
             return new Description(appearance, thingDesc, LanguageDatabase.DefaultLangFolderName, pawn.ThingID);
         }
 
