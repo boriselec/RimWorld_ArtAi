@@ -110,6 +110,11 @@ namespace ArtAi.Avatar
                     return "blind human with cataracts";
                 case "Yttakin":
                     return "animal furry";
+                case "Pigskin":
+                    // pigskins are hard to get right
+                    // sometimes its goes full pig, sometimes its hardly piglike
+                    // probably need negative prompt "animal" or "4 legged" to get this right
+                    return "snout humanlike piglin";
                 case "Hussar":
                     //todo: only relevant feature of hussars is red eyes, but ai for some reason bad at generating eyes
                 default:
