@@ -49,26 +49,6 @@ namespace ArtAi.Avatar
                     + (pawn.story.favoriteColor == null ? "" : ("wearing " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes "))
                     + ("age " + ageRound);
                 ColonistAppearance[pawn.thingIDNumber] = appearance;
-
-#if DEBUG
-                Log.Message("Avatar appearance colonist " + pawn.Name + ": " + Environment.NewLine + 
-                    appearance + Environment.NewLine +
-                    Environment.NewLine +
-                    $"LabelCap={pawn.LabelCap} " + Environment.NewLine + //Noah<color=#999999FF>, Designer</color> 
-                    $"TitleShortCap={TitleShortCapUntranslated(pawn)} " + Environment.NewLine + //Designer 
-                    $"bodyType={pawn.story.bodyType.defName} " + Environment.NewLine + //Hulk, Thin, Fat
-                    $"HairColor={pawn.story.HairColor} {GetHairColorText(pawn)}" + Environment.NewLine +
-                    $"SkinColor={pawn.story.SkinColor} " + Environment.NewLine + //0.3882353
-                    $"SkinColorBase={pawn.story.SkinColorBase} " + Environment.NewLine + //0.3882353
-                    $"favoriteColor={pawn.story.favoriteColor} {GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap)}" + Environment.NewLine +
-                    $"Age={pawn.ageTracker.AgeBiologicalYears} " + Environment.NewLine +
-                    $"beardDef={pawn.style.beardDef.defName} " + Environment.NewLine + //NoBeard
-                    $"gender={pawn.gender} " + Environment.NewLine +//Male Female - woman/girl  male/boy
-                    $"GenderLabel={pawn.GetGenderLabel()} " + Environment.NewLine +
-                    $"hairstyle={string.Join(",", pawn.story.hairDef.styleTags)} " + Environment.NewLine + 
-                    $"" + Environment.NewLine +
-                    $"");
-#endif
             }
 
             var thingDesc = "beautiful photorealistic portrait of a";
