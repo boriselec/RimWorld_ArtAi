@@ -28,7 +28,6 @@ namespace ArtAi.Avatar
                     : age < 25 ? 18
                     : age < 60 ? 25
                     : 60;
-                var appearanceTraits = AppearanceTraits(pawn);
 
                 appearance =
                     Race(pawn) + " " +
@@ -36,7 +35,7 @@ namespace ArtAi.Avatar
                         : bodyType == "Thin" ? "thin "
                         : bodyType == "Fat" ? "fat "
                         : "")
-                    + string.Join(" ", appearanceTraits) + " "
+                    + AppearanceTraits(pawn)
                     + (age >= 13 && age < 18 ? "teenager " : "")
                     + (pawn.gender == Gender.Female && ageRound < 18 ? "girl "
                         : pawn.gender == Gender.Female && ageRound >= 18 ? "woman "
@@ -46,7 +45,8 @@ namespace ArtAi.Avatar
                     + TitleShortCapUntranslated(pawn) + " "
                     + SkinColor(pawn) + " "
                     + GetFacialAndHeadHair(pawn)
-                    + (pawn.story.favoriteColor == null ? "" : ("wearing " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes "))
+                    + (pawn.story.favoriteColor == null ? ""
+                        : "wearing " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes ")
                     + ("age " + ageRound);
                 ColonistAppearance[pawn.thingIDNumber] = appearance;
             }
@@ -137,9 +137,9 @@ namespace ArtAi.Avatar
             return backstoryDef.untranslatedTitle;
         }
 
-        private static List<string> AppearanceTraits(Pawn pawn)
+        private static string AppearanceTraits(Pawn pawn)
         {
-            return pawn.story.traits.allTraits
+            List<string> result = pawn.story.traits.allTraits
                 .OrderByDescending(t =>
                 {
                     switch (t.def.defName)
@@ -173,6 +173,8 @@ namespace ArtAi.Avatar
                 .Select(t => t.CurrentData.untranslatedLabel)
                 .Take(3)
                 .ToList();
+
+            return result.Any() ? string.Join(" ", result) + " " : "";
         }
 
         private static string GetFacialAndHeadHair(Pawn pawn)
