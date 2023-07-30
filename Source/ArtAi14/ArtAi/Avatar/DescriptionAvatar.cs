@@ -207,6 +207,10 @@ namespace ArtAi.Avatar
 
         private static string GetFacialAndHeadHair(Pawn pawn)
         {
+            if (pawn.ageTracker.AgeBiologicalYears < 3)
+            {
+                return "";  // newborns doesn't have hair
+            }
             var hairstyles = pawn.story.hairDef.styleTags;
             bool hairShort = hairstyles.Contains("HairShort");
             bool hairLong = hairstyles.Contains("HairLong");
