@@ -119,6 +119,10 @@ namespace ArtAi.Avatar
         private static string AgeRound(Pawn pawn)
         {
             var age = pawn.ageTracker.AgeBiologicalYears;
+            if (age < 3)
+            {
+                return "";
+            }
             var ageRound = age < 18 ? 12
                 : age < 25 ? 18
                 : age < 60 ? 25
@@ -201,8 +205,8 @@ namespace ArtAi.Avatar
 
         private static string Clothes(Pawn pawn)
         {
-            return pawn.story.favoriteColor == null ? ""
-                : "wearing " + GetColorText(pawn.story.favoriteColor.Value, FavoriteColorMap) + " clothes";
+            string clothes = pawn.ageTracker.AgeBiologicalYears < 3 ? "swaddle" : "clothes";
+            return "wearing " + GetColorText(pawn.story.favoriteColor, FavoriteColorMap) + " " + clothes;
         }
 
         private static string GetFacialAndHeadHair(Pawn pawn)
@@ -266,6 +270,11 @@ namespace ArtAi.Avatar
         {
             Gene mainGene = gene.Overridden ? gene.overriddenByGene : gene;
             return UntranslatedDefs.Labels.TryGetValue(mainGene.def.defName, gene.def.label);
+        }
+
+        private static string GetColorText(Color? color, Dictionary<Color, string> map)
+        {
+            return color.HasValue ? GetColorText(color.Value, map) : "";
         }
 
         private static string GetColorText(Color color, Dictionary<Color, string> map)
