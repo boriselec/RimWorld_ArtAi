@@ -60,7 +60,9 @@ namespace ArtAi.Avatar
                     }
                 }
             }
-            return pawn.story.SkinColorBase.r > 0.5f ? "light-skinned" : "dark-skinned";
+            return pawn.story.SkinColorBase.r > 0.6f ? "light-skinned"  // Skin_Melanin1-7
+                : pawn.story.SkinColorBase.r > 0.45f ? "brown-skinned"  // Skin_Melanin8
+                : "dark-skinned";                                       // Skin_Melanin9
         }
 
         private static string Race(Pawn pawn)
