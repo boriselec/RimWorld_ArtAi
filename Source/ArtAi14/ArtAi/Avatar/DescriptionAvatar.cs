@@ -98,7 +98,7 @@ namespace ArtAi.Avatar
         private static string BodyType(Pawn pawn)
         {
             var bodyType = pawn.story.bodyType.defName;
-            return bodyType == "Hulk" ? "inflated physique" // brawny ?
+            return bodyType == "Hulk" ? "brawny"
                 : bodyType == "Thin" ? "thin"
                 : bodyType == "Fat" ? "fat"
                 : "";
