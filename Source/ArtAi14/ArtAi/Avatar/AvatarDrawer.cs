@@ -97,7 +97,9 @@ namespace ArtAi.Avatar
                     case GenerationStatus.Done:
                         var dialogWindow = new Dialog_ShowImage(
                             image.Texture,
-                            () => image = ImageService.ForceRefresh(description));
+                            // do not show refresh button if current image matches description
+                            showRefreshButton: () => ImageRepo.GetExactImage(description) == null,
+                            refreshCallback: () => image = ImageService.ForceRefresh(description));
                         Find.WindowStack.Add(dialogWindow);
                         break;
                     // click on empty image -> start generation
