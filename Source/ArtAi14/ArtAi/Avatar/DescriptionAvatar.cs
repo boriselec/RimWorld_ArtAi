@@ -31,8 +31,7 @@ namespace ArtAi.Avatar
                     + Story(pawn) + " "
                     + SkinColor(pawn) + " "
                     + GetFacialAndHeadHair(pawn) + " "
-                    + Clothes(pawn) + " "
-                    + AgeRound(pawn));
+                    + Clothes(pawn));
                 ColonistAppearance[pawn.thingIDNumber] = appearance;
             }
 
@@ -107,27 +106,22 @@ namespace ArtAi.Avatar
         {
             int age = pawn.ageTracker.AgeBiologicalYears;
             return 
-                pawn.gender == Gender.Female && age < 13 ? "girl"
-                : pawn.gender == Gender.Female && age >= 13 && age < 18 ? "teenager girl"
-                : pawn.gender == Gender.Female && age >= 18 ? "woman"
-                : pawn.gender == Gender.Male && age < 13 ? "boy"
-                : pawn.gender == Gender.Male && age >= 13 && age < 18 ? "teenager boy"
-                : pawn.gender == Gender.Male && age >= 18 ? "male"
+                pawn.gender == Gender.Female && age < 3 ? "newborn girl"
+                : pawn.gender == Gender.Female && age < 7 ? "toddler girl"
+                : pawn.gender == Gender.Female && age < 13 ? "child girl"
+                : pawn.gender == Gender.Female && age < 18 ? "teenager woman"
+                : pawn.gender == Gender.Female && age < 45 ? "woman"
+                : pawn.gender == Gender.Female && age < 66 ? "middle-aged woman"
+                : pawn.gender == Gender.Female ? "senior woman"
+                    
+                : pawn.gender == Gender.Male && age < 3 ? "newborn boy"
+                : pawn.gender == Gender.Male && age < 7 ? "toddler boy"
+                : pawn.gender == Gender.Male && age < 13 ? "child boy"
+                : pawn.gender == Gender.Male && age < 18 ? "teenager man"
+                : pawn.gender == Gender.Male && age < 45 ? "man"
+                : pawn.gender == Gender.Male && age < 66 ? "middle-aged man"
+                : pawn.gender == Gender.Male ? "senior man"
                 : "";
-        }
-
-        private static string AgeRound(Pawn pawn)
-        {
-            var age = pawn.ageTracker.AgeBiologicalYears;
-            if (age < 3)
-            {
-                return "";
-            }
-            var ageRound = age < 18 ? 12
-                : age < 25 ? 18
-                : age < 60 ? 25
-                : 60;
-            return "age " + ageRound;
         }
 
         // copy of Pawn_StoryTracker#TitleShortCap with no translation
@@ -143,7 +137,16 @@ namespace ArtAi.Avatar
             }
             if (storyChildhood != null)
             {
-                return StoryTitleUntranslated(storyChildhood, gender);
+                string storyTitle = StoryTitleUntranslated(storyChildhood, gender);
+                if (storyTitle == "newborn"
+                    || storyTitle == "child"
+                    || storyTitle == "colony child"
+                    || storyTitle == "tribe child"
+                    || storyTitle == "vatgrown child")
+                {
+                    return "";
+                }
+                return storyTitle;
             }
             return "";
         }
