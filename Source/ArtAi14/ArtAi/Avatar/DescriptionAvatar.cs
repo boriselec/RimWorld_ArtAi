@@ -216,7 +216,8 @@ namespace ArtAi.Avatar
 
         private static string GetFacialAndHeadHair(Pawn pawn)
         {
-            if (pawn.ageTracker.AgeBiologicalYears < 3)
+            int age = pawn.ageTracker.AgeBiologicalYears;
+            if (age < 3)
             {
                 return "";  // newborns doesn't have hair
             }
@@ -233,9 +234,10 @@ namespace ArtAi.Avatar
                 : "with " + hairLength + " " + hairColor + " hair";
             // specify beard color only if bald. otherwise it should be deducted by model from hair color
             string beardColor = hairBald ? hairColor : "";
-            string beardOrShaven = pawn.style.beardDef.defName == "NoBeard"
-                ? "clean-shaven"
-                : "with " + beardColor + " beard";
+            bool hasBeard = pawn.style.beardDef.defName != "NoBeard";
+            string beardOrShaven = !hasBeard && age >= 13 ? "clean-shaven"
+                : hasBeard ? "with " + beardColor + " beard"
+                : "";
             string facialHair = pawn.genes.CanHaveBeard ? beardOrShaven : "";
 
             return hair + " " + facialHair;
