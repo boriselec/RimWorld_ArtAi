@@ -211,7 +211,9 @@ namespace ArtAi.Avatar
         private static string Clothes(Pawn pawn)
         {
             string clothes = pawn.ageTracker.AgeBiologicalYears < 3 ? "swaddle" : "clothes";
-            return "wearing " + GetColorText(pawn.story.favoriteColor, FavoriteColorMap) + " " + clothes;
+            string clothesColor = GetColorText(pawn.story.favoriteColor, FavoriteColorMap);
+            string royal = pawn.royalty.MostSeniorTitle != null ? "royal" : "";
+            return "wearing " + clothesColor + " " + royal + " " + clothes;
         }
 
         private static string GetFacialAndHeadHair(Pawn pawn)
