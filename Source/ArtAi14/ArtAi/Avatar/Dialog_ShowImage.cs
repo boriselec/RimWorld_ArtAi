@@ -10,10 +10,7 @@ namespace ArtAi.Avatar
         private Func<bool> ShowRefreshButton;
         private Action RefreshCallback;
 
-        public override Vector2 InitialSize
-        {
-            get { return LastInitialSize; }
-        }
+        public override Vector2 InitialSize => LastInitialSize;
 
         private static float _menuOffset = 50f;
 
@@ -44,7 +41,7 @@ namespace ArtAi.Avatar
                 LastInitialPos = windowRect.position;
             }
             else
-                windowRect.Set(LastInitialPos.x, LastInitialPos.y, windowRect.width, windowRect.height + _menuOffset);
+                windowRect.Set(LastInitialPos.x, LastInitialPos.y, windowRect.width, windowRect.height);
 
             Vector2 center = new Vector2(windowRect.x + windowRect.width / 2f, windowRect.y + windowRect.height / 2f);
             Vector2 size = new Vector2(Image.width, Image.height);
@@ -60,7 +57,7 @@ namespace ArtAi.Avatar
                 size.x = size.x * newy / size.y;
                 size.y = newy;
             }
-            windowRect.Set(center.x - size.x / 2f, center.y - size.y / 2f, size.x, size.y + _menuOffset);
+            windowRect.Set(center.x - size.x / 2f, center.y - size.y / 2f, size.x, size.y);
         }
 
         public override void PostClose()
