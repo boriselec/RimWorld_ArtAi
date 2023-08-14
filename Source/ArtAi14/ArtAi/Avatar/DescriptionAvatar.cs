@@ -48,7 +48,7 @@ namespace ArtAi.Avatar
 
         private static string SkinColor(Pawn pawn)
         {
-            foreach (var gene in pawn.genes.GenesListForReading)
+            foreach (var gene in pawn.genes?.GenesListForReading ?? Enumerable.Empty<Gene>())
             {
                 if (gene.def.displayCategory.defName == "Cosmetic_Skin")
                 {
@@ -67,11 +67,11 @@ namespace ArtAi.Avatar
 
         private static string Race(Pawn pawn)
         {
-            switch (pawn.genes.Xenotype.defName)
+            switch (pawn.genes?.Xenotype?.defName ?? "")
             {
                 case "Neanderthal":
                     // as is
-                    return pawn.genes.Xenotype.defName;
+                    return "neanderthal";
                 case "Impid":
                     return "two-horned imp";
                 case "Sanguophage":
@@ -212,7 +212,7 @@ namespace ArtAi.Avatar
         {
             string clothes = pawn.ageTracker.AgeBiologicalYears < 3 ? "swaddle" : "clothes";
             string clothesColor = GetColorText(pawn.story.favoriteColor, FavoriteColorMap);
-            string royal = pawn.royalty.MostSeniorTitle != null ? "royal" : "";
+            string royal = pawn.royalty?.MostSeniorTitle != null ? "royal" : "";
             return "wearing " + clothesColor + " " + royal + " " + clothes;
         }
 
@@ -240,7 +240,8 @@ namespace ArtAi.Avatar
             string beardOrShaven = !hasBeard && age >= 13 ? "clean-shaven"
                 : hasBeard ? "with " + beardColor + " beard"
                 : "";
-            string facialHair = pawn.genes.CanHaveBeard ? beardOrShaven : "";
+            bool canHaveBeard = pawn.genes?.CanHaveBeard ?? true;
+            string facialHair = canHaveBeard ? beardOrShaven : "";
 
             return hair + " " + facialHair;
         }
@@ -263,7 +264,7 @@ namespace ArtAi.Avatar
                 }
             }
             // gene hair
-            foreach (var gene in pawn.genes.GenesListForReading)
+            foreach (var gene in pawn.genes?.GenesListForReading ?? Enumerable.Empty<Gene>())
             {
                 if (gene.def.endogeneCategory == EndogeneCategory.HairColor)
                 {
