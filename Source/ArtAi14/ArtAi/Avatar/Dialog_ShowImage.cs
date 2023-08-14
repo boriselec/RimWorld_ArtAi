@@ -12,7 +12,7 @@ namespace ArtAi.Avatar
 
         public override Vector2 InitialSize => LastInitialSize;
 
-        private static float _menuOffset = 50f;
+        private static float _menuOffset = 90f;
 
         static Vector2 LastInitialSize = new Vector2(200f, 200f + _menuOffset);
         static Vector2 LastInitialPos = new Vector2(-1f, -1f);
