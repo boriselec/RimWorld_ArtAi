@@ -139,16 +139,10 @@ namespace ArtAi.Avatar
             }
             if (storyChildhood != null)
             {
-                string storyTitle = StoryTitleUntranslated(storyChildhood, gender);
-                if (storyTitle == "newborn"
-                    || storyTitle == "child"
-                    || storyTitle == "colony child"
-                    || storyTitle == "tribe child"
-                    || storyTitle == "vatgrown child")
-                {
-                    return "";
-                }
-                return storyTitle;
+                return StoryTitleUntranslated(storyChildhood, gender)
+                    .Replace("newborn", "")
+                    .Replace(" child", "-born")
+                    .Replace("child", "");
             }
             return "";
         }
