@@ -206,8 +206,15 @@ namespace ArtAi.Avatar
         {
             string clothes = pawn.ageTracker.AgeBiologicalYears < 3 ? "swaddle" : "clothes";
             string clothesColor = GetColorText(pawn.story.favoriteColor, FavoriteColorMap);
-            string royal = pawn.royalty?.MostSeniorTitle != null ? "royal" : "";
-            return "wearing " + clothesColor + " " + royal + " " + clothes;
+            return "wearing " + clothesColor + " " + Royalty(pawn.royalty) + " " + clothes;
+        }
+
+        // those who need custom bedroom are true nobles
+        private static string Royalty(Pawn_RoyaltyTracker royalty)
+        {
+            return royalty?.MostSeniorTitle != null
+                   && royalty.HighestTitleWithBedroomRequirements() != null
+                ? "royal" : "";
         }
 
         private static string GetFacialAndHeadHair(Pawn pawn)
