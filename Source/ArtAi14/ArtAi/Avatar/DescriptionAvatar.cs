@@ -142,6 +142,7 @@ namespace ArtAi.Avatar
                 return StoryTitleUntranslated(storyChildhood, gender)
                     .Replace("newborn", "")
                     .Replace(" child", "-born")
+                    .Replace(" kid", "-born")
                     .Replace("child", "");
             }
             return "";
