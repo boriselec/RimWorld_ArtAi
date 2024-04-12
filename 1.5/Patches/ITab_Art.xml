@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationInsert">
+    <xpath>Defs/ThingDef/inspectorTabs/li[.='ITab_Art']</xpath>
+    <order>Append</order>
+    <value>
+      <li>ArtAi.ITab_Art_Generated</li>
+    </value>
+  </Operation>
+</Patch>
