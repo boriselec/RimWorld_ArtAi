@@ -172,7 +172,8 @@ namespace ArtAi.Avatar
             var storyChildhood = story.Childhood;
             if (storyAdulthood != null)
             {
-                return StoryTitleUntranslated(storyAdulthood, gender);
+                return StoryTitleUntranslated(storyAdulthood, gender)
+                    .Replace("unknown", "mysterious");
             }
             if (storyChildhood != null)
             {
