@@ -11,7 +11,11 @@ namespace ArtAi.Avatar
         [HarmonyPostfix]
         public static void Postfix(ref IEnumerable<Gizmo> __result, Thing __instance)
         {
-            if (AvatarDrawer.NeedDraw(__instance))
+            if (AvatarDrawer.NeedDrawArt(__instance))
+            {
+                __result = __result.Prepend(new ArtGizmo(__instance));
+            }
+            if (AvatarDrawer.NeedDrawAvatar(__instance))
             {
                 __result = __result.Prepend(new AvatarGizmo(__instance));
             }

@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArtAiMod.cs" />
+    <Compile Include="Avatar\ArtGizmo.cs" />
     <Compile Include="Avatar\AvatarDrawer.cs" />
     <Compile Include="Avatar\AvatarGizmo.cs" />
     <Compile Include="Avatar\DescriptionAvatar.cs" />
