@@ -13,14 +13,26 @@ namespace ArtAi.Avatar
 
         private static readonly Texture2D Icon_Idle = ContentFinder<Texture2D>.Get("UI/Icons/ColonistBar/Idle");
 
-        public static bool NeedDraw(Thing thing)
+        public static bool NeedDrawArt(Thing thing)
         {
             if (!ArtAiSettings.ShowGizmo) return false;
 
             CompArt compArt = GetCompArt(thing);
             if (compArt != null && compArt.Active) return true;
-            if (thing is Pawn pawn && NeedDraw(pawn)) return true;
             if (thing is Book) return true;
+
+            //new features enter here
+
+            return false;
+        }
+
+        public static bool NeedDrawAvatar(Thing thing)
+        {
+            if (!ArtAiSettings.ShowGizmo) return false;
+
+            if (thing is Pawn pawn && NeedDraw(pawn)) return true;
+            if (thing is Corpse corpse && NeedDraw(corpse.InnerPawn)) return true;
+            if (thing is Building_CorpseCasket grave && grave.HasCorpse && NeedDraw(grave.Corpse?.InnerPawn)) return true;
 
             //new features enter here
 
@@ -29,13 +41,12 @@ namespace ArtAi.Avatar
 
         private static bool NeedDraw(Pawn pawn)
         {
-            return pawn.Spawned
-                   && pawn.IsColonist
+            return pawn.IsColonist
                    && pawn.HostFaction == null
                    && !pawn.IsPrisoner;
         }
 
-        private static Description GetDescription(Thing thing)
+        private static Description GetDescriptionArt(Thing thing)
         {
             Description description = default;
 
@@ -44,14 +55,31 @@ namespace ArtAi.Avatar
             {
                 description = DescriptionCompArt.GetDescription(compArt);
             }
+            if (thing is Book book)
+            {
+                description = new Description($"Title: {book.Title}.\nDescription: {book.FlavorUI}", "Book cover. ", LanguageDatabase.activeLanguage.folderName, book.ThingID);
+            }
+
+            //new features enter here
+
+            return description;
+        }
+
+        private static Description GetDescriptionAvatar(Thing thing)
+        {
+            Description description = default;
 
             if (thing is Pawn pawn && NeedDraw(pawn))
             {
                 description = DescriptionAvatar.GetByColonist(pawn);
             }
-            if (thing is Book book)
+            if (thing is Corpse corpse)
             {
-                description = new Description($"Title: {book.Title}.\nDescription: {book.FlavorUI}", "Book cover. ", LanguageDatabase.activeLanguage.folderName, book.ThingID);
+                description = GetDescriptionAvatar(corpse.InnerPawn);
+            }
+            if (thing is Building_CorpseCasket grave)
+            {
+                description = GetDescriptionAvatar(grave.Corpse?.InnerPawn);
             }
 
             //new features enter here
@@ -132,9 +160,14 @@ namespace ArtAi.Avatar
             GUI.DrawTexture(new Rect(rect.x + dw2, rect.y + dh2, width, width), texture);
         }
 
-        public static void Draw(Thing thing, Vector2 topLeft)
+        public static void DrawArt(Thing thing, Vector2 topLeft)
         {
-            Draw(GetDescription(thing), topLeft);
+            Draw(GetDescriptionArt(thing), topLeft);
+        }
+
+        public static void DrawAvatar(Thing thing, Vector2 topLeft)
+        {
+            Draw(GetDescriptionAvatar(thing), topLeft);
         }
     }
 }

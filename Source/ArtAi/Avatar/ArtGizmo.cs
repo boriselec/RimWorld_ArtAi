@@ -3,15 +3,15 @@ using Verse;
 
 namespace ArtAi.Avatar
 {
-    public class AvatarGizmo : Gizmo
+    public class ArtGizmo : Gizmo
     {
         private readonly Thing _thing;
 
-        public AvatarGizmo(Thing thing) => _thing = thing;
+        public ArtGizmo(Thing thing) => _thing = thing;
 
         public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth, GizmoRenderParms parms)
         {
-            AvatarDrawer.DrawAvatar(_thing, topLeft);
+            AvatarDrawer.DrawArt(_thing, topLeft);
             return new GizmoResult(0);
         }
 
