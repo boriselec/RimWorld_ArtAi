@@ -67,32 +67,69 @@ namespace ArtAi.Avatar
 
         private static string Race(Pawn pawn)
         {
-            switch (pawn.genes?.Xenotype?.defName ?? "")
+            string xenotypeName = pawn.genes?.Xenotype?.defName ?? "";
+            List<string> geneLabels = GetGenesLabels(pawn.genes);
+            
+            if (xenotypeName == "Neanderthal" || 
+                (HasAllGenes(geneLabels, "robust", "slow study") && 
+                 HasAnyGenes(geneLabels, "cold tolerant", "cold super-tolerant")))
             {
-                case "Neanderthal":
-                    // as is
-                    return "neanderthal";
-                case "Impid":
-                    return "two-horned imp";
-                case "Sanguophage":
-                    return "vampire";
-                case "Waster":
-                    // wasters are basically ghouls: unattractive gray-skinned post-apocalyptic human-like creatures
-                    return "ghoul";
-                case "Dirtmole":
-                    return "blind human with cataracts";
-                case "Yttakin":
-                    return "animal furry";
-                case "Pigskin":
-                    // pigskins are hard to get right
-                    // sometimes its goes full pig, sometimes its hardly piglike
-                    // probably need negative prompt "animal" or "4 legged" to get this right
-                    return "snout humanlike piglin";
-                case "Hussar":
-                    //todo: only relevant feature of hussars is red eyes, but ai for some reason bad at generating eyes
-                default:
-                    return "human";
+                return "neanderthal";
             }
+            
+            if (xenotypeName == "Impid" || 
+                HasAllGenes(geneLabels, "fire spew", "mini-horns"))
+            {
+                return "two-horned imp";
+            }
+            
+            if (xenotypeName == "Sanguophage" || 
+                (HasAllGenes(geneLabels, "bloodfeeder", "ageless", "deathless", "non-senescent") && 
+                 HasAnyGenes(geneLabels, "mild UV sensitivity", "intense UV sensitivity")))
+            {
+                return "vampire";
+            }
+            
+            if (xenotypeName == "Waster" || 
+                (HasAllGenes(geneLabels, "pollution stimulus") && 
+                 HasAnyGenes(geneLabels, "partial antitoxic lungs", "total antitoxic lungs") &&
+                 HasAnyGenes(geneLabels, "unattractive", "very unattractive")))
+            {
+                // wasters are basically ghouls: unattractive gray-skinned post-apocalyptic human-like creatures
+                return "ghoul";
+            }
+            
+            if (xenotypeName == "Dirtmole" || 
+                (HasAllGenes(geneLabels, "nearsighted") && 
+                 HasAnyGenes(geneLabels, "mild UV sensitivity", "intense UV sensitivity") &&
+                 HasAnyGenes(geneLabels, "strong mining", "great mining")))
+            {
+                return "cave troglodyte morlock";
+            }
+
+            if (xenotypeName == "Yttakin")
+            {
+                return "animal furry";
+            }
+
+            if (xenotypeName == "Pigskin")
+            {
+                // pigskins are hard to get right
+                // sometimes its goes full pig, sometimes its hardly piglike
+                // probably need negative prompt "animal" or "4 legged" to get this right
+                return "snout humanlike piglin";
+            }
+            
+            if (xenotypeName == "Hussar" || 
+                (HasAllGenes(geneLabels, "unstoppable") && 
+                 HasAnyGenes(geneLabels, "aggressive", "hyper-aggressive") && 
+                 HasAnyGenes(geneLabels, "strong melee", "great melee") &&
+                 HasAnyGenes(geneLabels, "strong shooting", "great shooting")))
+            {
+                return "space marine";
+            }
+            
+            return "human";
         }
 
         private static string BodyType(Pawn pawn)
@@ -282,6 +319,23 @@ namespace ArtAi.Avatar
         {
             Gene mainGene = gene.Overridden ? gene.overriddenByGene : gene;
             return UntranslatedDefs.Labels.TryGetValue(mainGene.def.defName, gene.def.label);
+        }
+
+        private static List<string> GetGenesLabels(Pawn_GeneTracker pawnGeneTracker)
+        {
+            return ((IEnumerable<Gene>) pawnGeneTracker?.GenesListForReading ?? Enumerable.Empty<Gene>())
+                .Select(GetGeneLabel)
+                .ToList();
+        }
+
+        private static bool HasAllGenes(IEnumerable<string> pawnGeneLabels, params string[] geneLabels)
+        {
+            return geneLabels.All(pawnGeneLabels.Contains);
+        }
+
+        private static bool HasAnyGenes(IEnumerable<string> pawnGeneLabels, params string[] geneLabels)
+        {
+            return geneLabels.Any(pawnGeneLabels.Contains);
         }
 
         private static string GetColorText(Color? color, Dictionary<Color, string> map)
