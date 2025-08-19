@@ -1,7 +1,6 @@
 ﻿using System;
 using ArtAi.data;
 using RimWorld;
-using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 
@@ -21,6 +20,7 @@ namespace ArtAi.Avatar
             CompArt compArt = GetCompArt(thing);
             if (compArt != null && compArt.Active) return true;
             if (thing is Pawn pawn && NeedDraw(pawn)) return true;
+            if (thing is Book) return true;
 
             //new features enter here
 
@@ -48,6 +48,10 @@ namespace ArtAi.Avatar
             if (thing is Pawn pawn && NeedDraw(pawn))
             {
                 description = DescriptionAvatar.GetByColonist(pawn);
+            }
+            if (thing is Book book)
+            {
+                description = new Description($"Title: {book.Title}.\nDescription: {book.FlavorUI}", "Book cover. ", LanguageDatabase.activeLanguage.folderName, book.ThingID);
             }
 
             //new features enter here
