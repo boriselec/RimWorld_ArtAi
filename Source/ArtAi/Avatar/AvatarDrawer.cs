@@ -27,13 +27,6 @@ namespace ArtAi.Avatar
             return false;
         }
 
-        public static bool NeedDraw(WorldObject worldObject)
-        {
-            //new features enter here
-
-            return false;
-        }
-
         private static bool NeedDraw(Pawn pawn)
         {
             return pawn.Spawned
@@ -62,29 +55,13 @@ namespace ArtAi.Avatar
             return description;
         }
 
-        private static Description GetDescription(WorldObject worldObject)
-        {
-            Description description = default;
-
-
-            //new features enter here
-
-            return description;
-        }
-
-        private static void Draw(Description description, Rect rect, ref float startX)
+        private static void Draw(Description description, Vector2 topLeft)
         {
             if (description.IsNull) return;
 
             var image = ImageService.Get(description);
 
-            if (ArtAiSettings.DoubleAvatarSize && image.Status == GenerationStatus.Done)
-            {
-                rect.yMin -= rect.height + GizmoGridDrawer.GizmoSpacing.x;
-                rect.width = rect.height;
-            }
-            startX += GizmoGridDrawer.GizmoSpacing.x + rect.width;
-
+            Rect rect = new Rect(topLeft.x, topLeft.y, 75f, 75f);
             GUI.DrawTexture(rect, Command.BGTexShrunk);
             rect = rect.ContractedBy(2);
 
@@ -151,14 +128,9 @@ namespace ArtAi.Avatar
             GUI.DrawTexture(new Rect(rect.x + dw2, rect.y + dh2, width, width), texture);
         }
 
-        public static void Draw(Thing thing, Rect rect, ref float startX)
+        public static void Draw(Thing thing, Vector2 topLeft)
         {
-            Draw(GetDescription(thing), rect, ref startX);
-        }
-
-        public static void Draw(WorldObject worldObject, Rect rect, ref float startX)
-        {
-            Draw(GetDescription(worldObject), rect, ref startX);
+            Draw(GetDescription(thing), topLeft);
         }
     }
 }

@@ -8,13 +8,11 @@ namespace ArtAi
     {
         public static string ServerUrl = "https://boriselec.com/rimworld-art/generate";
         public static bool ShowGizmo = true;
-        public static bool DoubleAvatarSize = true;
 
         public override void ExposeData()
         {
             Scribe_Values.Look(ref ServerUrl, "serverUrl", "https://boriselec.com/rimworld-art/generate");
             Scribe_Values.Look(ref ShowGizmo, "showGizmo", true);
-            Scribe_Values.Look(ref DoubleAvatarSize, "doubleAvatarSize", true);
             base.ExposeData();
         }
     }
@@ -40,8 +38,6 @@ namespace ArtAi
             ArtAiSettings.ServerUrl = listingStandard.TextEntry(ArtAiSettings.ServerUrl);
             listingStandard.Gap();
             listingStandard.CheckboxLabeled("Show gizmo", ref ArtAiSettings.ShowGizmo);
-            listingStandard.Gap();
-            listingStandard.CheckboxLabeled("Double avatar size", ref ArtAiSettings.DoubleAvatarSize);
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
         }
