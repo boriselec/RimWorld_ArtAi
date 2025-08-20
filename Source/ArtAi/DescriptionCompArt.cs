@@ -8,10 +8,10 @@ namespace ArtAi
     {
         public static Description GetDescription(CompArt compArt)
         {
-            var ArtDescription = compArt.GenerateImageDescription();
-            var ThingDescription = compArt.parent.def.description;
-            var language = LanguageDatabase.activeLanguage.folderName;
-            return new Description(ArtDescription, ThingDescription, language, compArt.parent.ThingID);
+            var imageDescription = compArt.GenerateImageDescription();
+            var description = compArt.parent.def.description;
+            var folderName = LanguageDatabase.activeLanguage.folderName;
+            return new Description(imageDescription, description, folderName, compArt.parent.ThingID);
         }
     }
 }

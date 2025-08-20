@@ -90,10 +90,11 @@ namespace ArtAi
                         Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
                         tex.LoadImage(array);
                         tex.Apply();
-                        if (tex.NullOrBad())
+                        if (tex.NullOrBad() || tex.height * tex.width <= 64)
                         {
                             return GeneratedImage.Error();
                         }
+
                         return GeneratedImage.Done(tex, description.ArtDescription);
                     }
                 default:

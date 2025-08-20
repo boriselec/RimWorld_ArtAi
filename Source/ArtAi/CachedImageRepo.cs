@@ -7,53 +7,58 @@ namespace ArtAi
     public abstract class CachedImageRepo
     {
         // cache of done images by exact description
-        private static readonly Dictionary<Description, GeneratedImage> GetExactImageCache
-            = new Dictionary<Description, GeneratedImage>();
+        private static readonly Dictionary<Description, Texture2D> GetExactImageCache
+            = new Dictionary<Description, Texture2D>();
 
         // cache of done images by thing (description may be outdated)
-        private static readonly Dictionary<string, GeneratedImage> GetLastGeneratedImageCache
-            = new Dictionary<string, GeneratedImage>();
+        private static readonly Dictionary<string, Texture2D> GetLastGeneratedImageCache
+            = new Dictionary<string, Texture2D>();
 
         public static GeneratedImage GetExactImage(Description description)
         {
-            if (GetExactImageCache.ContainsKey(description))
+            Texture2D exactImage;
+            if (GetExactImageCache.TryGetValue(description, out var value))
             {
-                return GetExactImageCache[description];
+                exactImage = value;
+            }
+            else
+            {
+                exactImage = ImageRepo.GetExactImage(description);
+                if (exactImage != null)
+                {
+                    GetExactImageCache[description] = exactImage;
+                }
             }
 
-            Texture2D exactImage = ImageRepo.GetExactImage(description);
-            if (exactImage != null)
-            {
-                GeneratedImage result = GeneratedImage.Done(exactImage, description.ArtDescription);
-                GetExactImageCache[description] = result;
-                return result;
-            }
-
-            return null;
+            return exactImage == null
+                ? null
+                : GeneratedImage.Done(exactImage, description.ArtDescription);
         }
 
         public static GeneratedImage GetLastGeneratedImage(Description description)
         {
             string thingId = description.ThingId;
-            if (GetLastGeneratedImageCache.ContainsKey(thingId))
+            Texture2D lastGeneratedImage;
+            if (GetLastGeneratedImageCache.TryGetValue(thingId, out var value))
             {
-                return GetLastGeneratedImageCache[thingId];
+                lastGeneratedImage = value;
+            }
+            else
+            {
+                lastGeneratedImage = ImageRepo.GetLastGeneratedImage(thingId);
+                if (lastGeneratedImage != null)
+                {
+                    GetLastGeneratedImageCache[thingId] = lastGeneratedImage;
+                }
             }
 
-            Texture2D lastGeneratedImage = ImageRepo.GetLastGeneratedImage(thingId);
-            if (lastGeneratedImage != null)
-            {
-                GeneratedImage done = GeneratedImage.Done(lastGeneratedImage, description.ArtDescription);
-                GetLastGeneratedImageCache[thingId] = done;
-                return done;
-            }
-
-            return null;
+            return lastGeneratedImage == null
+                ? null
+                : GeneratedImage.Outdated(lastGeneratedImage, description.ArtDescription);
         }
 
         public static void ClearCache(Description description)
         {
-            GetExactImageCache.Remove(description);
             GetLastGeneratedImageCache.Remove(description.ThingId);
         }
     }
