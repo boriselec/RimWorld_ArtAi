@@ -128,6 +128,18 @@ namespace ArtAi.Avatar
             {
                 return "space marine";
             }
+
+            if (xenotypeName == "Highmate" ||
+                HasAllGenes(geneLabels, "very attractive", "psychic bonding"))
+            {
+                return "model human";
+            }
+
+            if (xenotypeName == "Genie" ||
+                HasAllGenes(geneLabels, "dead calm", "great intellectual"))
+            {
+                return "vulcan sci-fi";
+            }
             
             return "human";
         }
