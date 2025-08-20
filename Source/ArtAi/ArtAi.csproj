@@ -86,6 +86,8 @@
     <Compile Include="data\CachedImage.cs" />
     <Compile Include="data\Description.cs" />
     <Compile Include="data\GeneratedImage.cs" />
+    <Compile Include="data\GenerationStatus.cs" />
+    <Compile Include="data\GenerationStatusExtensions.cs" />
     <Compile Include="DescriptionCompArt.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="ImageRepo.cs" />

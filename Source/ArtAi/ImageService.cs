@@ -20,40 +20,33 @@ namespace ArtAi
         public static GeneratedImage Get(Description description)
         {
             string thingId = description.ThingId;
+            GeneratedImage generatedImage = CachedImageRepo.GetExactImage(description);
 
-            GeneratedImage result;
-            // Player requested refresh of image. Get image from disk/cache only if description matches exactly.
-            if (ForcedRefresh.ContainsKey(thingId) && ForcedRefresh[thingId])
+            bool forcedRefresh = ForcedRefresh.ContainsKey(thingId) && ForcedRefresh[thingId];
+            if (forcedRefresh && generatedImage != null)
             {
-                result = CachedImageRepo.GetExactImage(description);
-                if (result != null)
-                {
-                    ForcedRefresh.Remove(thingId);
-                }
-            }
-            else
-            {
-                result = CachedImageRepo.GetLastGeneratedImage(description);
+                ForcedRefresh.Remove(thingId);
             }
 
-            if (result == null && InProgress.ContainsKey(description))
+            if (generatedImage == null && !forcedRefresh)
             {
-                result = InProgress[description].Image;
+                generatedImage = CachedImageRepo.GetLastGeneratedImage(description);
             }
 
-            return result ?? GeneratedImage.NeedGenerate();
+            if (generatedImage == null && InProgress.ContainsKey(description))
+            {
+                generatedImage = InProgress[description].Image;
+            }
+            return generatedImage ?? GeneratedImage.NeedGenerate();
         }
 
         // Get existing image or generate if none
         public static GeneratedImage GetOrGenerate(Description description)
         {
-            GeneratedImage cached = Get(description);
-            if (cached.Status == GenerationStatus.Done)
-            {
-                return cached;
-            }
-
-            return GetInProgress(description) ?? GenerateAndRefreshCaches(description);
+            GeneratedImage generatedImage = Get(description);
+            return generatedImage.Status.HasImage()
+                ? generatedImage
+                : GetInProgress(description) ?? GenerateAndRefreshCaches(description);
         }
 
         [CanBeNull]
@@ -77,6 +70,7 @@ namespace ArtAi
             switch (generatedImage.Status)
             {
                 case GenerationStatus.Done:
+                case GenerationStatus.Outdated:
                     ImageRepo.SaveImage(generatedImage.Texture.EncodeToPNG(), description);
                     ClearCache(description);
                     return generatedImage;

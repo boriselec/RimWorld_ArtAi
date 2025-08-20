@@ -103,12 +103,10 @@ namespace ArtAi.Avatar
                 {
                     // click on done image -> show dialog window
                     case GenerationStatus.Done:
-                        var dialogWindow = new Dialog_ShowImage(
-                            image.Texture,
-                            // do not show refresh button if current image matches description
-                            showRefreshButton: () => ImageRepo.GetExactImage(description) == null,
-                            refreshCallback: () => image = ImageService.ForceRefresh(description));
-                        Find.WindowStack.Add(dialogWindow);
+                        Find.WindowStack.Add(new Dialog_ShowImage(image.Texture));
+                        break;
+                    case GenerationStatus.Outdated:
+                        Find.WindowStack.Add(new Dialog_ShowImage(image.Texture, () => image = ImageService.ForceRefresh(description)));
                         break;
                     // click on empty image -> start generation
                     case GenerationStatus.NeedGenerate:
@@ -136,6 +134,7 @@ namespace ArtAi.Avatar
             switch (image.Status)
             {
                 case GenerationStatus.Done:
+                case GenerationStatus.Outdated:
                     GUI.DrawTexture(rect, image.Texture);
                     break;
 

@@ -16,15 +16,20 @@ namespace ArtAi.data
             Status = status;
             Description = description;
         }
-        
+
         public static GeneratedImage InProgress(String description)
         {
             return new GeneratedImage(GenerationStatus.InProgress, null, description);
         }
-        
+
         public static GeneratedImage Done(Texture2D texture, String description)
         {
             return new GeneratedImage(GenerationStatus.Done, texture, description);
+        }
+
+        public static GeneratedImage Outdated(Texture2D texture, string description)
+        {
+            return new GeneratedImage(GenerationStatus.Outdated, texture, description);
         }
 
         public static GeneratedImage Error()
@@ -36,12 +41,5 @@ namespace ArtAi.data
         {
             return new GeneratedImage(GenerationStatus.NeedGenerate, null, "AiArtGizmoTooltip".Translate());
         }
-    }
-
-    public enum GenerationStatus
-    {
-        InProgress,
-        Done,
-        NeedGenerate
     }
 }
