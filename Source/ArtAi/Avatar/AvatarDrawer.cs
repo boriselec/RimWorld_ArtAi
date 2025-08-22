@@ -41,7 +41,8 @@ namespace ArtAi.Avatar
 
         private static bool NeedDraw(Pawn pawn)
         {
-            return pawn.IsColonist
+            return pawn != null
+                   &&pawn.IsColonist
                    && pawn.HostFaction == null
                    && !pawn.IsPrisoner;
         }
@@ -87,11 +88,12 @@ namespace ArtAi.Avatar
             return description;
         }
 
-        private static void Draw(Description description, Vector2 topLeft)
+        private static void Draw(Description description, Thing thing, Vector2 topLeft)
         {
-            if (description.IsNull) return;
+            if (description.IsNull || thing == null) return;
 
             var image = ImageService.Get(description);
+            image = TransformImage(thing, image);
 
             Rect rect = new Rect(topLeft.x, topLeft.y, 75f, 75f);
             GUI.DrawTexture(rect, Command.BGTexShrunk);
@@ -106,19 +108,16 @@ namespace ArtAi.Avatar
                         Find.WindowStack.Add(new Dialog_ShowImage(image.Texture));
                         break;
                     case GenerationStatus.Outdated:
-                        Find.WindowStack.Add(new Dialog_ShowImage(image.Texture, () => image = ImageService.ForceRefresh(description)));
+                        Find.WindowStack.Add(new Dialog_ShowImage(image.Texture,
+                            () => ImageService.ForceRefresh(description)));
                         break;
                     // click on empty image -> start generation
                     case GenerationStatus.NeedGenerate:
+                    case GenerationStatus.InProgress:
                         image = ImageService.GetOrGenerate(description);
+                        image = TransformImage(thing, image);
                         break;
                 }
-            }
-
-            // in progress image can be outdated
-            if (image.Status == GenerationStatus.InProgress)
-            {
-                image = ImageService.GetOrGenerate(description);
             }
 
             Draw(rect, image);
@@ -161,12 +160,69 @@ namespace ArtAi.Avatar
 
         public static void DrawArt(Thing thing, Vector2 topLeft)
         {
-            Draw(GetDescriptionArt(thing), topLeft);
+            Draw(GetDescriptionArt(thing), thing, topLeft);
         }
 
-        public static void DrawAvatar(Thing thing, Vector2 topLeft)
+        public static void DrawAvatar(Pawn thing, Vector2 topLeft)
         {
-            Draw(GetDescriptionAvatar(thing), topLeft);
+            Draw(GetDescriptionAvatar(thing), thing, topLeft);
+        }
+
+        private static GeneratedImage TransformImage(Thing thing, GeneratedImage image)
+        {
+            if (thing is Pawn pawn2 && pawn2.Dead)
+            {
+                Texture2D modifiedTexture = MakeGrayWithRibbon(image.Texture);
+                return image.WithTexture(modifiedTexture);
+            }
+            else
+            {
+                return image;
+            }
+        }
+        
+        private static Texture2D MakeGrayWithRibbon(Texture2D originalTexture)
+        {
+            // Create a new texture for the grayscale version
+            Texture2D grayscaleTexture = new Texture2D(originalTexture.width, originalTexture.height);
+            Color[] pixels = originalTexture.GetPixels();
+
+            // Convert to grayscale
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                Color pixel = pixels[i];
+                float grayValue = pixel.r * 0.299f + pixel.g * 0.587f + pixel.b * 0.114f;
+                pixels[i] = new Color(grayValue, grayValue, grayValue, pixel.a); // Preserve alpha
+            }
+
+            // Add a black ribbon
+            int width = originalTexture.width;
+            int height = originalTexture.height;
+            float ribbonThickness = 0.05f; // Define ribbon thickness as a percentage of the image diagonal
+            int ribbonWidth = (int)(ribbonThickness * Mathf.Sqrt(width * width + height * height));
+
+            // Offset for shifting the ribbon
+            int offset = (int)(0.5f * Mathf.Min(width, height)); // % of the smaller dimension
+
+            // Draw a diagonal ribbon closer to the bottom-right
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    // Use a single offset to shift the diagonal
+                    if (Mathf.Abs((x - y) - offset) < ribbonWidth)
+                    {
+                        int index = y * width + x;
+                        pixels[index] = new Color(0, 0, 0, pixels[index].a); // Preserve the original alpha
+                    }
+                }
+            }
+
+            // Apply modifications to the new texture
+            grayscaleTexture.SetPixels(pixels);
+            grayscaleTexture.Apply();
+
+            return grayscaleTexture;
         }
     }
 }

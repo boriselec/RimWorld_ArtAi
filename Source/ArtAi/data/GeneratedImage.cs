@@ -17,6 +17,11 @@ namespace ArtAi.data
             Description = description;
         }
 
+        public GeneratedImage WithTexture(Texture2D texture)
+        {
+            return new GeneratedImage(Status, texture, Description);
+        }
+
         public static GeneratedImage InProgress(String description)
         {
             return new GeneratedImage(GenerationStatus.InProgress, null, description);
