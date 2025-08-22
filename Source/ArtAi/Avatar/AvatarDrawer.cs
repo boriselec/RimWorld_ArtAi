@@ -33,6 +33,7 @@ namespace ArtAi.Avatar
             if (thing is Pawn pawn && NeedDraw(pawn)) return true;
             if (thing is Corpse corpse && NeedDraw(corpse.InnerPawn)) return true;
             if (thing is Building_CorpseCasket grave && grave.HasCorpse && NeedDraw(grave.Corpse?.InnerPawn)) return true;
+            if (thing is Building_Enterable enterable && enterable.innerContainer.Any && NeedDraw(enterable.SelectedPawn)) return true;
 
             //new features enter here
 
