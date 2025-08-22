@@ -31,6 +31,10 @@ namespace ArtAi.Avatar
             {
                 return casket.Corpse?.InnerPawn;
             }
+            else if (_thing is Building_Enterable enterable)
+            {
+                return enterable.SelectedPawn;
+            }
             else
             {
                 throw new ArgumentOutOfRangeException();
