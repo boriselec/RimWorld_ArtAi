@@ -114,11 +114,15 @@ namespace ArtAi.Avatar
                         break;
                     // click on empty image -> start generation
                     case GenerationStatus.NeedGenerate:
-                    case GenerationStatus.InProgress:
                         image = ImageService.GetOrGenerate(description);
                         image = TransformImage(thing, image);
                         break;
                 }
+            }
+
+            if (image.Status == GenerationStatus.InProgress)
+            {
+                image = ImageService.GetOrGenerate(description);
             }
 
             Draw(rect, image);
