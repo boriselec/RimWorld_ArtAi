@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# build - Build the ArtAi RimWorld mod (macOS / Unix)
+# Usage:
+#   ./build [Configuration] [Platform]
+# Examples:
+#   ./build                 -> builds Release, "Any CPU"
+#   ./build Debug "Any CPU" -> builds Debug, "Any CPU"
+#
+# Default values:
+CONFIG="${1:-Release}"
+PLATFORM="${2:-Any CPU}"
+SLN="Source/ArtAi.sln"
+
+echo "Building solution: $SLN"
+echo "Configuration: $CONFIG"
+echo "Platform: $PLATFORM"
+
+if command -v msbuild >/dev/null 2>&1; then
+  echo "Found msbuild -> using msbuild"
+  msbuild "$SLN" /p:Configuration="$CONFIG" /p:Platform="$PLATFORM"
+elif command -v xbuild >/dev/null 2>&1; then
+  echo "msbuild not found, falling back to xbuild (deprecated)"
+  xbuild "$SLN" /p:Configuration="$CONFIG" /p:Platform="$PLATFORM"
+else
+  echo "Error: neither 'msbuild' nor 'xbuild' was found in PATH." >&2
+  echo "Install msbuild (Mono) or add it to PATH, then retry." >&2
+  exit 1
+fi
+
+echo "Build finished. ArtAi.dll will be placed into the OutputPath defined in the project (e.g. 1.6/Assemblies for Release builds)."
