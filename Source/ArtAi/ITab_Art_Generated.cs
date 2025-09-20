@@ -50,7 +50,7 @@ namespace ArtAi
         {
             Rect rect3 = rect1;
             rect3.yMin += 35f;
-            if (image.Status.HasImage())
+            if (image.Texture != null)
             {
                 GUI.DrawTexture(rect3, image.Texture, ScaleMode.ScaleToFit);
             }

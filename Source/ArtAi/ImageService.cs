@@ -9,8 +9,7 @@ namespace ArtAi
     public abstract class ImageService
     {
         // user requested refresh of image by thing
-        private static readonly Dictionary<string, bool> ForcedRefresh
-            = new Dictionary<string, bool>();
+        private static readonly HashSet<string> ForcedRefresh = new HashSet<string>();
 
         // store in progress generation requests to reduce load
         private static readonly Dictionary<Description, CachedImage> InProgress
@@ -22,8 +21,7 @@ namespace ArtAi
             string thingId = description.ThingId;
             GeneratedImage generatedImage = CachedImageRepo.GetExactImage(description);
 
-            bool forcedRefresh = ForcedRefresh.ContainsKey(thingId)
-                                 && ForcedRefresh[thingId];
+            bool forcedRefresh = ForcedRefresh.Contains(thingId);
             if (forcedRefresh && generatedImage != null)
             {
                 ForcedRefresh.Remove(thingId);
@@ -46,9 +44,18 @@ namespace ArtAi
         public static GeneratedImage GetOrGenerate(Description description)
         {
             GeneratedImage generatedImage = Get(description);
-            return generatedImage.Status.HasImage()
-                ? generatedImage
-                : GetInProgress(description) ?? GenerateAndRefreshCaches(description);
+            switch (generatedImage.Status)
+            {
+                case GenerationStatus.Done:
+                case GenerationStatus.Outdated:
+                    return generatedImage;
+                case GenerationStatus.InProgress:
+                case GenerationStatus.NeedGenerate:
+                    return GetInProgress(description)
+                           ?? GenerateAndRefreshCaches(description);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         [CanBeNull]
@@ -78,8 +85,13 @@ namespace ArtAi
                     ClearCache(description);
                     return generatedImage;
                 case GenerationStatus.InProgress:
-                    InProgress[description] = new CachedImage(generatedImage);
-                    return generatedImage;
+                    var inProgressDescription = generatedImage.Description;
+                    var lastImage = CachedImageRepo.GetLastGeneratedImage(description);
+                    var inProgressImage = GeneratedImage.InProgress(
+                        lastImage?.Texture,
+                        inProgressDescription);
+                    InProgress[description] = new CachedImage(inProgressImage);
+                    return inProgressImage;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -94,7 +106,7 @@ namespace ArtAi
 
         public static GeneratedImage ForceRefresh(Description description)
         {
-            ForcedRefresh[description.ThingId] = true;
+            ForcedRefresh.Add(description.ThingId);
             return GetOrGenerate(description);
         }
     }

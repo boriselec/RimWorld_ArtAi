@@ -10,7 +10,10 @@ namespace ArtAi.data
         public readonly Texture2D Texture;
         public readonly string Description;
 
-        private GeneratedImage(GenerationStatus status, Texture2D texture, string description)
+        private GeneratedImage(
+            GenerationStatus status,
+            Texture2D texture,
+            string description)
         {
             Texture = texture;
             Status = status;
@@ -24,7 +27,15 @@ namespace ArtAi.data
 
         public static GeneratedImage InProgress(String description)
         {
-            return new GeneratedImage(GenerationStatus.InProgress, null, description);
+            return InProgress(null, description);
+        }
+
+        public static GeneratedImage InProgress(Texture2D texture, string description)
+        {
+            return new GeneratedImage(
+                GenerationStatus.InProgress,
+                texture,
+                description);
         }
 
         public static GeneratedImage Done(Texture2D texture, String description)
@@ -44,7 +55,10 @@ namespace ArtAi.data
 
         public static GeneratedImage NeedGenerate()
         {
-            return new GeneratedImage(GenerationStatus.NeedGenerate, null, "AiArtGizmoTooltip".Translate());
+            return new GeneratedImage(
+                GenerationStatus.NeedGenerate,
+                null,
+                "AiArtGizmoTooltip".Translate());
         }
     }
 }

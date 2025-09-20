@@ -14,6 +14,9 @@ namespace ArtAi.Avatar
         private static readonly Texture2D IconIdle
             = ContentFinder<Texture2D>.Get("UI/Icons/ColonistBar/Idle");
 
+        private static readonly Texture2D IconOutdated
+            = ContentFinder<Texture2D>.Get("UI/Overlays/Arrow");
+
         public static bool NeedDrawArt(Thing thing)
         {
             if (!ArtAiSettings.ShowGizmo) return false;
@@ -108,7 +111,6 @@ namespace ArtAi.Avatar
             if (description.IsNull || thing == null) return;
 
             var image = ImageService.Get(description);
-            image = TransformImage(thing, image);
 
             Rect rect = new Rect(topLeft.x, topLeft.y, 75f, 75f);
             GUI.DrawTexture(rect, Command.BGTexShrunk);
@@ -120,16 +122,19 @@ namespace ArtAi.Avatar
                 {
                     // click on done image -> show dialog window
                     case GenerationStatus.Done:
-                        Find.WindowStack.Add(new Dialog_ShowImage(image.Texture));
+                    case GenerationStatus.InProgress:
+                        if (image.Texture != null)
+                        {
+                            Find.WindowStack.Add(new Dialog_ShowImage(image.Texture));
+                        }
+
                         break;
                     case GenerationStatus.Outdated:
-                        Find.WindowStack.Add(new Dialog_ShowImage(image.Texture,
-                            () => ImageService.ForceRefresh(description)));
+                        image = ImageService.ForceRefresh(description);
                         break;
                     // click on empty image -> start generation
                     case GenerationStatus.NeedGenerate:
                         image = ImageService.GetOrGenerate(description);
-                        image = TransformImage(thing, image);
                         break;
                 }
             }
@@ -139,6 +144,7 @@ namespace ArtAi.Avatar
                 image = ImageService.GetOrGenerate(description);
             }
 
+            image = TransformImage(thing, image);
             Draw(rect, image);
 
             if (!string.IsNullOrEmpty(image.Description))
@@ -152,11 +158,20 @@ namespace ArtAi.Avatar
             switch (image.Status)
             {
                 case GenerationStatus.Done:
-                case GenerationStatus.Outdated:
                     GUI.DrawTexture(rect, image.Texture);
                     break;
 
+                case GenerationStatus.Outdated:
+                    GUI.DrawTexture(rect, image.Texture);
+                    DrawButton(rect, IconOutdated);
+                    break;
+
                 case GenerationStatus.InProgress:
+                    if (image.Texture != null)
+                    {
+                        GUI.DrawTexture(rect, image.Texture);
+                    }
+
                     DrawButton(rect, IconIdle);
                     break;
 
@@ -204,6 +219,7 @@ namespace ArtAi.Avatar
 
         private static Texture2D MakeGrayWithRibbon(Texture2D originalTexture)
         {
+            if (originalTexture == null) return null;
             // Create a new texture for the grayscale version
             Texture2D grayscaleTexture =
                 new Texture2D(originalTexture.width, originalTexture.height);

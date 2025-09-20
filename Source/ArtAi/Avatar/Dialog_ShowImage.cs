@@ -7,7 +7,6 @@ namespace ArtAi.Avatar
     public class Dialog_ShowImage : Window
     {
         private Texture2D Image;
-        private Action RefreshCallback;
 
         public override Vector2 InitialSize => LastInitialSize;
 
@@ -16,7 +15,7 @@ namespace ArtAi.Avatar
         static Vector2 LastInitialSize = new Vector2(200f, 200f + _menuOffset);
         static Vector2 LastInitialPos = new Vector2(-1f, -1f);
 
-        public Dialog_ShowImage(Texture2D image, Action refreshCallback = null)
+        public Dialog_ShowImage(Texture2D image)
         {
             closeOnCancel = true;
             closeOnAccept = false;
@@ -26,7 +25,6 @@ namespace ArtAi.Avatar
             draggable = true;
 
             Image = image;
-            RefreshCallback = refreshCallback;
         }
 
         public override void PreOpen()
@@ -77,15 +75,6 @@ namespace ArtAi.Avatar
             rect.y -= _menuOffset / 2f;
 
             GUI.DrawTexture(rect, Image);
-
-            if (RefreshCallback != null)
-            {
-                if (Widgets.ButtonText(new Rect(rect.x, rect.y + rect.height + 20f, 115f, 25f), "refresh"))
-                {
-                    RefreshCallback.Invoke();
-                    Close();
-                }
-            }
         }
 
     }
