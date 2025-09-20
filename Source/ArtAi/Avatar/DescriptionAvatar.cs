@@ -200,14 +200,6 @@ namespace ArtAi.Avatar
 
         private static string StoryTitleUntranslated(BackstoryDef backstoryDef, Gender gender)
         {
-            if (gender == Gender.Female && !backstoryDef.untranslatedTitleShortFemale.NullOrEmpty())
-            {
-                return backstoryDef.untranslatedTitleShortFemale;
-            }
-            if (!backstoryDef.untranslatedTitleShort.NullOrEmpty())
-            {
-                return backstoryDef.untranslatedTitleShort;
-            }
             if (gender == Gender.Female && !backstoryDef.untranslatedTitleFemale.NullOrEmpty())
             {
                 return backstoryDef.untranslatedTitleFemale;
