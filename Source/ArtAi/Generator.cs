@@ -17,14 +17,16 @@ namespace ArtAi
             {
                 Log.Message("AI Art request");
                 var steamAccountID = SteamAccountID();
-                var request = MakeRequest(description.ArtDescription, description.ThingDescription,
+                var request = MakeRequest(
+                    description.ArtDescription, description.ThingDescription,
                     steamAccountID, description.Language);
 
                 using (var response = request.GetResponse())
                 {
                     using (var rsDataStream = response.GetResponseStream())
                     {
-                        return ProcessResponse(rsDataStream, response.ContentType, description);
+                        return ProcessResponse(
+                            rsDataStream, response.ContentType, description);
                     }
                 }
             }
@@ -35,13 +37,15 @@ namespace ArtAi
             }
         }
 
-        private static WebRequest MakeRequest(string artDescription, string thingDescription, string steamAccountID,
-            string language)
+        private static WebRequest MakeRequest(
+            string artDescription, string thingDescription,
+            string steamAccountID, string language)
         {
             var serverUrl = ArtAiSettings.ServerUrl;
             var request = WebRequest.Create(serverUrl);
             request.Method = "POST";
-            var postData = Serialize(artDescription, thingDescription, steamAccountID, language);
+            var postData = Serialize(
+                artDescription, thingDescription, steamAccountID, language);
             var byteArray = Encoding.UTF8.GetBytes(postData);
             request.ContentType = "text/plain";
             request.ContentLength = byteArray.Length;
@@ -54,8 +58,9 @@ namespace ArtAi
             return request;
         }
 
-        private static string Serialize(string artDescription, string thingDescription, string steamAccountID,
-            string language)
+        private static string Serialize(
+            string artDescription, string thingDescription,
+            string steamAccountID, string language)
         {
             const string delimiter = ";";
             return string.Join(delimiter,
@@ -65,7 +70,8 @@ namespace ArtAi
                 language.Replace(delimiter, ""));
         }
 
-        private static GeneratedImage ProcessResponse(Stream response, string contentType, Description description)
+        private static GeneratedImage ProcessResponse(
+            Stream response, string contentType, Description description)
         {
             if (response == null)
             {
@@ -109,11 +115,15 @@ namespace ArtAi
 
             if (responseFromServer.Contains(queued))
             {
-                string queuePos = responseFromServer.Substring(responseFromServer.IndexOf(queued) + queued.Length);
-                int waitTimeSeconds = (int.Parse(queuePos) + 1) * approximateGenerationTimeSeconds;
+                var queuedLength = responseFromServer.IndexOf(queued) + queued.Length;
+                string queuePos = responseFromServer.Substring(queuedLength);
+                int waitTimeSeconds = (int.Parse(queuePos) + 1)
+                                      * approximateGenerationTimeSeconds;
                 return "AiArtInProgress".Translate()
-                       + Environment.NewLine + Environment.NewLine +
-                       "AiArtTimeReaming".Translate() + TimeSpan.FromSeconds(waitTimeSeconds).ToString();
+                       + Environment.NewLine
+                       + Environment.NewLine
+                       + "AiArtTimeReaming".Translate()
+                       + TimeSpan.FromSeconds(waitTimeSeconds).ToString();
             }
 
             if (responseFromServer.Contains("Try later"))
