@@ -2,7 +2,7 @@
 <LanguageData>
 	<TabArtView>View</TabArtView>
 	<AiArtInProgress>Image is generating... Please wait</AiArtInProgress>
-	<AiArtTimeReaming>Approximate waiting time: </AiArtTimeReaming>
+	<AiArtQueuePosition>In queue: </AiArtQueuePosition>
 	<AiArtLimit>Limit exceeded. Try later</AiArtLimit>
 	<AiArtError>Error</AiArtError>
 	<AiArtGizmoTooltip>Click to generate image</AiArtGizmoTooltip>

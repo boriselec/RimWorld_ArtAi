@@ -111,19 +111,16 @@ namespace ArtAi
         private static string TranslateResponse(string responseFromServer)
         {
             const string queued = "Queued: ";
-            const int approximateGenerationTimeSeconds = 30;
 
             if (responseFromServer.Contains(queued))
             {
-                var queuedLength = responseFromServer.IndexOf(queued) + queued.Length;
-                string queuePos = responseFromServer.Substring(queuedLength);
-                int waitTimeSeconds = (int.Parse(queuePos) + 1)
-                                      * approximateGenerationTimeSeconds;
+                var prefixLenght = responseFromServer.IndexOf(queued) + queued.Length;
+                string queuePosition = responseFromServer.Substring(prefixLenght);
                 return "AiArtInProgress".Translate()
                        + Environment.NewLine
                        + Environment.NewLine
-                       + "AiArtTimeReaming".Translate()
-                       + TimeSpan.FromSeconds(waitTimeSeconds).ToString();
+                       + "AiArtQueuePosition".Translate()
+                       + queuePosition;
             }
 
             if (responseFromServer.Contains("Try later"))
