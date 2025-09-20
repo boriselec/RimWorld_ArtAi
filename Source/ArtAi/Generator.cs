@@ -18,15 +18,19 @@ namespace ArtAi
                 Log.Message("AI Art request");
                 var steamAccountID = SteamAccountID();
                 var request = MakeRequest(
-                    description.ArtDescription, description.ThingDescription,
-                    steamAccountID, description.Language);
+                    description.ArtDescription,
+                    description.ThingDescription,
+                    steamAccountID,
+                    description.Language);
 
                 using (var response = request.GetResponse())
                 {
                     using (var rsDataStream = response.GetResponseStream())
                     {
                         return ProcessResponse(
-                            rsDataStream, response.ContentType, description);
+                            rsDataStream,
+                            response.ContentType,
+                            description);
                     }
                 }
             }
@@ -38,17 +42,25 @@ namespace ArtAi
         }
 
         private static WebRequest MakeRequest(
-            string artDescription, string thingDescription,
-            string steamAccountID, string language)
+            string artDescription,
+            string thingDescription,
+            string steamAccountID,
+            string language)
         {
             var serverUrl = ArtAiSettings.ServerUrl;
             var request = WebRequest.Create(serverUrl);
+
             request.Method = "POST";
             var postData = Serialize(
-                artDescription, thingDescription, steamAccountID, language);
+                artDescription,
+                thingDescription,
+                steamAccountID,
+                language);
             var byteArray = Encoding.UTF8.GetBytes(postData);
+
             request.ContentType = "text/plain";
             request.ContentLength = byteArray.Length;
+
             using (var rqDataStream = request.GetRequestStream())
             {
                 rqDataStream.Write(byteArray, 0, byteArray.Length);
@@ -59,8 +71,10 @@ namespace ArtAi
         }
 
         private static string Serialize(
-            string artDescription, string thingDescription,
-            string steamAccountID, string language)
+            string artDescription,
+            string thingDescription,
+            string steamAccountID,
+            string language)
         {
             const string delimiter = ";";
             return string.Join(delimiter,
@@ -71,7 +85,9 @@ namespace ArtAi
         }
 
         private static GeneratedImage ProcessResponse(
-            Stream response, string contentType, Description description)
+            Stream response,
+            string contentType,
+            Description description)
         {
             if (response == null)
             {

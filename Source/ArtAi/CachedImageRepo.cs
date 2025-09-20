@@ -55,7 +55,8 @@ namespace ArtAi
             return lastGeneratedImage == null
                 ? null
                 : GeneratedImage.Outdated(
-                    lastGeneratedImage, description.ArtDescription);
+                    lastGeneratedImage,
+                    description.ArtDescription);
         }
 
         public static void ClearCache(Description description)

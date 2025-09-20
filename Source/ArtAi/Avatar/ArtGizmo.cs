@@ -9,7 +9,10 @@ namespace ArtAi.Avatar
 
         public ArtGizmo(Thing thing) => _thing = thing;
 
-        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth, GizmoRenderParms parms)
+        public override GizmoResult GizmoOnGUI(
+            Vector2 topLeft,
+            float maxWidth,
+            GizmoRenderParms parms)
         {
             AvatarDrawer.DrawArt(_thing, topLeft);
             return new GizmoResult(0);

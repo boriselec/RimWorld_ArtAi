@@ -8,6 +8,7 @@ namespace ArtAi.Avatar
     [HarmonyPatch(typeof (Thing), "GetGizmos")]
     public class ThingGizmoPatch
     {
+        // ReSharper disable InconsistentNaming
         [HarmonyPostfix]
         public static void Postfix(ref IEnumerable<Gizmo> __result, Thing __instance)
         {

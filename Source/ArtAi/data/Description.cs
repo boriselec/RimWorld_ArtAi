@@ -9,7 +9,11 @@ namespace ArtAi.data
 
         public bool IsNull => ArtDescription == null && ThingDescription == null;
 
-        public Description(string artDescription, string thingDescription, string language, string thingId)
+        public Description(
+            string artDescription,
+            string thingDescription,
+            string language,
+            string thingId)
         {
             ArtDescription = artDescription;
             ThingDescription = thingDescription;

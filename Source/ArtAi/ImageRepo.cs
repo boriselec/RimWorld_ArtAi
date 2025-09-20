@@ -10,12 +10,16 @@ namespace ArtAi
 {
     public abstract class ImageRepo
     {
-        private static readonly string RepoPath = Path.Combine(GenFilePaths.SaveDataFolderPath, "AiArt");
+        private static readonly string RepoPath = Path.Combine(
+            GenFilePaths.SaveDataFolderPath,
+            "AiArt");
 
         // Get image for thing that matches description exactly
         public static Texture2D GetExactImage(Description description)
         {
-            return GetImage(thingDir => GetExactFile(thingDir, description), description.ThingId);
+            return GetImage(
+                thingDir => GetExactFile(thingDir, description),
+                description.ThingId);
         }
 
         // Get last generated image for thing 
@@ -24,7 +28,9 @@ namespace ArtAi
             return GetImage(GetLastModifiedFile, thingId);
         }
 
-        private static Texture2D GetImage(Func<VirtualDirectory, VirtualFile> fileSupplier, string thingId)
+        private static Texture2D GetImage(
+            Func<VirtualDirectory, VirtualFile> fileSupplier,
+            string thingId)
         {
             try
             {
@@ -34,8 +40,9 @@ namespace ArtAi
                 {
                     return null;
                 }
+
                 VirtualFile virtualFile = fileSupplier.Invoke(thingDir);
-                
+
                 if (virtualFile != null)
                 {
                     return LoadTexture(virtualFile);
@@ -45,10 +52,12 @@ namespace ArtAi
             {
                 Log.Error(e.Message);
             }
+
             return null;
         }
 
-        private static VirtualFile GetExactFile(VirtualDirectory thingDir, Description description)
+        private static VirtualFile GetExactFile(VirtualDirectory thingDir,
+            Description description)
         {
             return thingDir.GetFile(GetImageFileName(description, thingDir.FullPath));
         }
@@ -88,11 +97,12 @@ namespace ArtAi
         {
             var hash = ((uint)description.GetHash()).ToString();
             int trimTo = 250 - dirPath.Length - hash.Length;
-            string sanitizedFileName = trimTo > 0 
+            string sanitizedFileName = trimTo > 0
                 ? Path.GetInvalidFileNameChars()
-                .Aggregate(description.ArtDescription + description.ThingDescription,
-                    (f, c) => f.Replace(c, '_'))
-                .Replace(" ", "_")
+                    .Aggregate(
+                        description.ArtDescription + description.ThingDescription,
+                        (f, c) => f.Replace(c, '_'))
+                    .Replace(" ", "_")
                 : String.Empty;
 
             if (sanitizedFileName.Length > trimTo)

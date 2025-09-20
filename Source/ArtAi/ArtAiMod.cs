@@ -11,7 +11,10 @@ namespace ArtAi
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(ref ServerUrl, "serverUrl", "https://boriselec.com/rimworld-art/generate");
+            Scribe_Values.Look(
+                ref ServerUrl,
+                "serverUrl",
+                "https://boriselec.com/rimworld-art/generate");
             Scribe_Values.Look(ref ShowGizmo, "showGizmo", true);
             base.ExposeData();
         }
@@ -35,7 +38,8 @@ namespace ArtAi
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
             listingStandard.Label("Generation server url");
-            ArtAiSettings.ServerUrl = listingStandard.TextEntry(ArtAiSettings.ServerUrl);
+            ArtAiSettings.ServerUrl = listingStandard.TextEntry(
+                ArtAiSettings.ServerUrl);
             listingStandard.Gap();
             listingStandard.CheckboxLabeled("Show gizmo", ref ArtAiSettings.ShowGizmo);
             listingStandard.End();

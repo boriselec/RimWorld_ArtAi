@@ -5,11 +5,14 @@ using Verse;
 
 namespace ArtAi.Avatar
 {
-    [HarmonyPatch(typeof(LoadedLanguage), nameof(LoadedLanguage.InjectIntoData_BeforeImpliedDefs))]
+    [HarmonyPatch(
+        typeof(LoadedLanguage),
+        nameof(LoadedLanguage.InjectIntoData_BeforeImpliedDefs))]
     public static class UntranslatedDefs
     {
         // Untranslated def labels (by def name)
-        public static Dictionary<string, string> Labels = new Dictionary<string, string>();
+        public static Dictionary<string, string> Labels
+            = new Dictionary<string, string>();
 
         // ReSharper disable once UnusedMember.Local
         // ReSharper disable once ArrangeTypeMemberModifiers

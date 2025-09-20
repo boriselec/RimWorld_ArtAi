@@ -221,8 +221,9 @@ namespace ArtAi.Avatar
         {
             if (originalTexture == null) return null;
             // Create a new texture for the grayscale version
-            Texture2D grayscaleTexture =
-                new Texture2D(originalTexture.width, originalTexture.height);
+            Texture2D grayscaleTexture = new Texture2D(
+                originalTexture.width,
+                originalTexture.height);
             Color[] pixels = originalTexture.GetPixels();
 
             // Convert to grayscale
@@ -233,9 +234,10 @@ namespace ArtAi.Avatar
                     = pixel.r * 0.299f
                       + pixel.g * 0.587f
                       + pixel.b * 0.114f;
-                pixels[i] =
-                    new Color(grayValue, grayValue, grayValue,
-                        pixel.a); // Preserve alpha
+                pixels[i] = new Color(
+                    grayValue, grayValue, grayValue,
+                    // Preserve alpha
+                    pixel.a);
             }
 
             // Add a black ribbon
@@ -243,12 +245,13 @@ namespace ArtAi.Avatar
             int height = originalTexture.height;
             // Define ribbon thickness as a percentage of the image diagonal
             float ribbonThickness = 0.05f;
-            int ribbonWidth = (int)(
-                ribbonThickness * Mathf.Sqrt(width * width + height * height));
+            float diagonal = Mathf.Sqrt(width * width + height * height);
+            int ribbonWidth = (int)(ribbonThickness * diagonal);
 
+            // % of the smaller dimension
+            int minDimension = Mathf.Min(width, height);
             // Offset for shifting the ribbon
-            int offset
-                = (int)(0.5f * Mathf.Min(width, height)); // % of the smaller dimension
+            int offset = (int)(0.5f * minDimension);
 
             // Draw a diagonal ribbon closer to the bottom-right
             for (int y = 0; y < height; y++)
@@ -260,7 +263,8 @@ namespace ArtAi.Avatar
                     {
                         int index = y * width + x;
                         pixels[index] =
-                            new Color(0, 0, 0,
+                            new Color(
+                                0, 0, 0,
                                 // Preserve the original alpha
                                 pixels[index].a);
                     }
