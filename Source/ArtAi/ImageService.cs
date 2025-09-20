@@ -22,7 +22,8 @@ namespace ArtAi
             string thingId = description.ThingId;
             GeneratedImage generatedImage = CachedImageRepo.GetExactImage(description);
 
-            bool forcedRefresh = ForcedRefresh.ContainsKey(thingId) && ForcedRefresh[thingId];
+            bool forcedRefresh = ForcedRefresh.ContainsKey(thingId)
+                                 && ForcedRefresh[thingId];
             if (forcedRefresh && generatedImage != null)
             {
                 ForcedRefresh.Remove(thingId);
@@ -37,6 +38,7 @@ namespace ArtAi
             {
                 generatedImage = InProgress[description].Image;
             }
+
             return generatedImage ?? GeneratedImage.NeedGenerate();
         }
 
@@ -71,7 +73,8 @@ namespace ArtAi
             {
                 case GenerationStatus.Done:
                 case GenerationStatus.Outdated:
-                    ImageRepo.SaveImage(generatedImage.Texture.EncodeToPNG(), description);
+                    var png = generatedImage.Texture.EncodeToPNG();
+                    ImageRepo.SaveImage(png, description);
                     ClearCache(description);
                     return generatedImage;
                 case GenerationStatus.InProgress:

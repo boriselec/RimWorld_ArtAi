@@ -11,7 +11,8 @@ namespace ArtAi.Avatar
     {
         private static CompArt GetCompArt(Thing thing) => thing?.TryGetComp<CompArt>();
 
-        private static readonly Texture2D Icon_Idle = ContentFinder<Texture2D>.Get("UI/Icons/ColonistBar/Idle");
+        private static readonly Texture2D IconIdle
+            = ContentFinder<Texture2D>.Get("UI/Icons/ColonistBar/Idle");
 
         public static bool NeedDrawArt(Thing thing)
         {
@@ -32,8 +33,14 @@ namespace ArtAi.Avatar
 
             if (thing is Pawn pawn && NeedDraw(pawn)) return true;
             if (thing is Corpse corpse && NeedDraw(corpse.InnerPawn)) return true;
-            if (thing is Building_CorpseCasket grave && grave.HasCorpse && NeedDraw(grave.Corpse?.InnerPawn)) return true;
-            if (thing is Building_Enterable enterable && enterable.innerContainer.Any && NeedDraw(enterable.SelectedPawn)) return true;
+            if (thing is Building_CorpseCasket grave
+                && grave.HasCorpse
+                && NeedDraw(grave.Corpse?.InnerPawn))
+                return true;
+            if (thing is Building_Enterable enterable
+                && enterable.innerContainer.Any
+                && NeedDraw(enterable.SelectedPawn))
+                return true;
 
             //new features enter here
 
@@ -43,7 +50,7 @@ namespace ArtAi.Avatar
         private static bool NeedDraw(Pawn pawn)
         {
             return pawn != null
-                   &&pawn.IsColonist
+                   && pawn.IsColonist
                    && pawn.HostFaction == null
                    && !pawn.IsPrisoner;
         }
@@ -57,9 +64,14 @@ namespace ArtAi.Avatar
             {
                 description = DescriptionCompArt.GetDescription(compArt);
             }
+
             if (thing is Book book)
             {
-                description = new Description($"Title: {book.Title}.\nDescription: {book.FlavorUI}", "Book cover. ", LanguageDatabase.activeLanguage.folderName, book.ThingID);
+                description = new Description(
+                    $"Title: {book.Title}.\n" +
+                    $"Description: {book.FlavorUI}",
+                    "Book cover. ", LanguageDatabase.activeLanguage.folderName,
+                    book.ThingID);
             }
 
             //new features enter here
@@ -75,10 +87,12 @@ namespace ArtAi.Avatar
             {
                 description = DescriptionAvatar.GetByColonist(pawn);
             }
+
             if (thing is Corpse corpse)
             {
                 description = GetDescriptionAvatar(corpse.InnerPawn);
             }
+
             if (thing is Building_CorpseCasket grave)
             {
                 description = GetDescriptionAvatar(grave.Corpse?.InnerPawn);
@@ -143,7 +157,7 @@ namespace ArtAi.Avatar
                     break;
 
                 case GenerationStatus.InProgress:
-                    DrawButton(rect, Icon_Idle);
+                    DrawButton(rect, IconIdle);
                     break;
 
                 case GenerationStatus.NeedGenerate:
@@ -160,7 +174,9 @@ namespace ArtAi.Avatar
             var width = 24f;
             var dw2 = (rect.width - 24f) / 2f;
             var dh2 = (rect.height - 24f) / 2f;
-            GUI.DrawTexture(new Rect(rect.x + dw2, rect.y + dh2, width, width), texture);
+            GUI.DrawTexture(
+                new Rect(rect.x + dw2, rect.y + dh2, width, width),
+                texture);
         }
 
         public static void DrawArt(Thing thing, Vector2 topLeft)
@@ -185,29 +201,38 @@ namespace ArtAi.Avatar
                 return image;
             }
         }
-        
+
         private static Texture2D MakeGrayWithRibbon(Texture2D originalTexture)
         {
             // Create a new texture for the grayscale version
-            Texture2D grayscaleTexture = new Texture2D(originalTexture.width, originalTexture.height);
+            Texture2D grayscaleTexture =
+                new Texture2D(originalTexture.width, originalTexture.height);
             Color[] pixels = originalTexture.GetPixels();
 
             // Convert to grayscale
             for (int i = 0; i < pixels.Length; i++)
             {
                 Color pixel = pixels[i];
-                float grayValue = pixel.r * 0.299f + pixel.g * 0.587f + pixel.b * 0.114f;
-                pixels[i] = new Color(grayValue, grayValue, grayValue, pixel.a); // Preserve alpha
+                float grayValue
+                    = pixel.r * 0.299f
+                      + pixel.g * 0.587f
+                      + pixel.b * 0.114f;
+                pixels[i] =
+                    new Color(grayValue, grayValue, grayValue,
+                        pixel.a); // Preserve alpha
             }
 
             // Add a black ribbon
             int width = originalTexture.width;
             int height = originalTexture.height;
-            float ribbonThickness = 0.05f; // Define ribbon thickness as a percentage of the image diagonal
-            int ribbonWidth = (int)(ribbonThickness * Mathf.Sqrt(width * width + height * height));
+            // Define ribbon thickness as a percentage of the image diagonal
+            float ribbonThickness = 0.05f;
+            int ribbonWidth = (int)(
+                ribbonThickness * Mathf.Sqrt(width * width + height * height));
 
             // Offset for shifting the ribbon
-            int offset = (int)(0.5f * Mathf.Min(width, height)); // % of the smaller dimension
+            int offset
+                = (int)(0.5f * Mathf.Min(width, height)); // % of the smaller dimension
 
             // Draw a diagonal ribbon closer to the bottom-right
             for (int y = 0; y < height; y++)
@@ -218,7 +243,10 @@ namespace ArtAi.Avatar
                     if (Mathf.Abs((x - y) - offset) < ribbonWidth)
                     {
                         int index = y * width + x;
-                        pixels[index] = new Color(0, 0, 0, pixels[index].a); // Preserve the original alpha
+                        pixels[index] =
+                            new Color(0, 0, 0,
+                                // Preserve the original alpha
+                                pixels[index].a);
                     }
                 }
             }
