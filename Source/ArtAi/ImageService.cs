@@ -75,7 +75,7 @@ namespace ArtAi
 
         private static GeneratedImage GenerateAndRefreshCaches(Description description)
         {
-            GeneratedImage generatedImage = Generator.Generate(description);
+            GeneratedImage generatedImage = Generator.GetOrEnqueue(description);
             switch (generatedImage.Status)
             {
                 case GenerationStatus.Done:

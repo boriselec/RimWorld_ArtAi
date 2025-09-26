@@ -1,4 +1,4 @@
-﻿namespace ArtAi
+namespace ArtAi.util
 {
     public static class StringUtil
     {

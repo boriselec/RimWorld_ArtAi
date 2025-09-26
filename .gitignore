@@ -2,3 +2,5 @@ obj/
 packages/
 .idea/
 *.user
+.aider*
+.env

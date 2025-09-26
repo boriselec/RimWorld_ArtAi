@@ -10,6 +10,7 @@
     <RootNamespace>ArtAi</RootNamespace>
     <AssemblyName>ArtAi</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <LangVersion>8.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <ManagedDirPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed</ManagedDirPath>
   </PropertyGroup>
@@ -48,6 +49,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -75,25 +77,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArtAiMod.cs" />
-    <Compile Include="Avatar\ArtGizmo.cs" />
-    <Compile Include="Avatar\AvatarDrawer.cs" />
-    <Compile Include="Avatar\AvatarGizmo.cs" />
-    <Compile Include="Avatar\DescriptionAvatar.cs" />
-    <Compile Include="Avatar\Dialog_ShowImage.cs" />
-    <Compile Include="Avatar\ThingGizmoPatch.cs" />
-    <Compile Include="Avatar\UntranslatedDefs.cs" />
-    <Compile Include="CachedImageRepo.cs" />
-    <Compile Include="data\CachedImage.cs" />
-    <Compile Include="data\Description.cs" />
-    <Compile Include="data\GeneratedImage.cs" />
-    <Compile Include="data\GenerationStatus.cs" />
-    <Compile Include="DescriptionCompArt.cs" />
-    <Compile Include="Generator.cs" />
-    <Compile Include="ImageRepo.cs" />
-    <Compile Include="ImageService.cs" />
-    <Compile Include="ITab_Art_Generated.cs" />
-    <Compile Include="StringUtil.cs" />
+    <Compile Include="**/*.cs" Exclude="bin/**;obj/**" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

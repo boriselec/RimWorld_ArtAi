@@ -3,7 +3,6 @@
 	<TabArtView>View</TabArtView>
 	<AiArtInProgress>Image is generating... Please wait</AiArtInProgress>
 	<AiArtQueuePosition>In queue: </AiArtQueuePosition>
-	<AiArtLimit>Limit exceeded. Try later</AiArtLimit>
 	<AiArtError>Error</AiArtError>
 	<AiArtGizmoTooltip>Click to generate image</AiArtGizmoTooltip>
 </LanguageData>

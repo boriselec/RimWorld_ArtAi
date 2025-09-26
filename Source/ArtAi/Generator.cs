@@ -1,162 +1,132 @@
 using System;
-using System.IO;
-using System.Net;
-using System.Text;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using ArtAi.data;
-using Steamworks;
+using ArtAi.util;
 using UnityEngine;
 using Verse;
 
 namespace ArtAi
 {
-    public abstract class Generator
+    public static class Generator
     {
-        public static GeneratedImage Generate(Description description)
+        private static readonly Dictionary<Description, string> Queued
+            = new Dictionary<Description, string>();
+
+        public static GeneratedImage GetOrEnqueue(Description description)
         {
             try
             {
-                Log.Message("AI Art request");
-                var steamAccountID = SteamAccountID();
-                var request = MakeRequest(
-                    description.ArtDescription,
-                    description.ThingDescription,
-                    steamAccountID,
-                    description.Language);
-
-                using (var response = request.GetResponse())
+                if (Queued.TryGetValue(description, out var rqUid))
                 {
-                    using (var rsDataStream = response.GetResponseStream())
-                    {
-                        return ProcessResponse(
-                            rsDataStream,
-                            response.ContentType,
-                            description);
-                    }
+                    return Get(rqUid, description);
+                }
+                else
+                {
+                    return Enqueue(description);
                 }
             }
             catch (Exception e)
             {
-                Log.Error(e.Message);
+                Log.Error(e.ToString());
                 return GeneratedImage.Error();
             }
         }
 
-        private static WebRequest MakeRequest(
-            string artDescription,
-            string thingDescription,
-            string steamAccountID,
-            string language)
+        private static GeneratedImage Enqueue(Description description)
         {
-            var serverUrl = ArtAiSettings.ServerUrl;
-            var request = WebRequest.Create(serverUrl);
+            string prompt = (description.ThingDescription
+                             + " " + description.ArtDescription)
+                .Replace('\n', ' ')
+                .Replace("  ", " ");
+            Log.Message("AiArt. prompt: " + prompt);
 
-            request.Method = "POST";
-            var postData = Serialize(
-                artDescription,
-                thingDescription,
-                steamAccountID,
-                language);
-            var byteArray = Encoding.UTF8.GetBytes(postData);
+            // Include the user ID to promote fairness in the generation
+            // queue and prevent any single user from dominating it.
+            // For non steam users is not specified.
+            string userId = SteamUtil.GetUserIdHash();
 
-            request.ContentType = "text/plain";
-            request.ContentLength = byteArray.Length;
+            string postData = @"{
+                ""prompt"": """ + prompt + @""",
+                ""userId"": """ + userId + @""",
+                ""language"": """ + description.Language + @"""
+            }";
+            var rs = HttpUtil.DoPost("/prompt", postData);
 
-            using (var rqDataStream = request.GetRequestStream())
+            string rqUid = GetJsonField(rs, "prompt_id");
+            string queuePosition = GetJsonField(rs, "artAiQueuePosition");
+
+            if (string.IsNullOrWhiteSpace(rqUid))
             {
-                rqDataStream.Write(byteArray, 0, byteArray.Length);
-                rqDataStream.Close();
+                Log.Error("No prompt_id");
+                return GeneratedImage.Error();
             }
-
-            return request;
+            Queued[description] = rqUid;
+            return GeneratedImage.InProgress(QueuedMessage(queuePosition));
         }
 
-        private static string Serialize(
-            string artDescription,
-            string thingDescription,
-            string steamAccountID,
-            string language)
+        private static GeneratedImage Get(string rqUid, Description description)
         {
-            const string delimiter = ";";
-            return string.Join(delimiter,
-                artDescription.Replace(delimiter, ""),
-                thingDescription.Replace(delimiter, ""),
-                steamAccountID.Replace(delimiter, ""),
-                language.Replace(delimiter, ""));
+            var rs = HttpUtil.DoGetText("/history/" + rqUid);
+            var filename = GetJsonField(rs, "filename");
+            var queuePosition = GetJsonField(rs, "artAiQueuePosition");
+            return filename == null
+                ? GeneratedImage.InProgress(QueuedMessage(queuePosition))
+                : Load(filename, description);
         }
 
-        private static GeneratedImage ProcessResponse(
-            Stream response,
-            string contentType,
-            Description description)
+        private static GeneratedImage Load(string filename, Description description)
         {
-            if (response == null)
+            var rs = HttpUtil.DoGetImage("/view?filename=" + filename);
+
+            Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
+            tex.LoadImage(rs);
+            tex.Apply();
+            if (tex.NullOrBad() || tex.height * tex.width <= 64)
             {
                 return GeneratedImage.Error();
             }
 
-            switch (contentType)
-            {
-                case "text":
-                case "text/plain":
-                    using (var reader = new StreamReader(response))
-                    {
-                        var responseFromServer = reader.ReadToEnd();
-                        var processedResponse = TranslateResponse(responseFromServer);
-                        return GeneratedImage.InProgress(processedResponse);
-                    }
-                case "image/png":
-                    using (var ms = new MemoryStream())
-                    {
-                        response.CopyTo(ms);
-                        var array = ms.ToArray();
-                        Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
-                        tex.LoadImage(array);
-                        tex.Apply();
-                        if (tex.NullOrBad() || tex.height * tex.width <= 64)
-                        {
-                            return GeneratedImage.Error();
-                        }
-
-                        return GeneratedImage.Done(tex, description.ArtDescription);
-                    }
-                default:
-                    return GeneratedImage.Error();
-            }
+            return GeneratedImage.Done(tex, description.ArtDescription);
         }
 
-        private static string TranslateResponse(string responseFromServer)
+        // This method uses regex for simple JSON field extraction instead of a full
+        // JSON parser because the project targets .NET Framework 4.7.2,
+        // where built-in JSON libraries like System.Text.Json are not available,
+        // and external dependencies (e.g., Newtonsoft.Json) are avoided
+        // to keep the mod lightweight.
+        private static string GetJsonField(string json, string fieldName)
         {
-            const string queued = "Queued: ";
-
-            if (responseFromServer.Contains(queued))
+            // The regex pattern matches JSON fields in the format "fieldName": value.
+            // Examples of matches:
+            // - "prompt_id": "abc123"
+            // - "artAiQueuePosition": 5
+            // - "filename": null
+            // - "status": true
+            string pattern = $@"""{fieldName}""\s*:\s*(?:""([^""]*)""|([^,\}}\]\s]*))";
+            Match match = Regex.Match(json, pattern);
+            if (match.Success)
             {
-                var prefixLenght = responseFromServer.IndexOf(queued) + queued.Length;
-                string queuePosition = responseFromServer.Substring(prefixLenght);
-                return "AiArtInProgress".Translate()
-                       + Environment.NewLine
-                       + Environment.NewLine
-                       + "AiArtQueuePosition".Translate()
-                       + queuePosition;
+                string value = match.Groups[1].Success
+                    ? match.Groups[1].Value
+                    : match.Groups[2].Value;
+                return string.IsNullOrEmpty(value) ? null : value;
             }
-
-            if (responseFromServer.Contains("Try later"))
-            {
-                return "AiArtLimit".Translate();
-            }
-
-            return responseFromServer;
+            return null;
         }
 
-        private static string SteamAccountID()
+        private static string QueuedMessage(string queuePosition)
         {
-            try
+            string result = "AiArtInProgress".Translate();
+            if (queuePosition != null)
             {
-                return SteamUser.GetSteamID().GetAccountID().m_AccountID.ToString();
+                result = result
+                    + Environment.NewLine
+                    + Environment.NewLine
+                    + "AiArtQueuePosition".Translate()
+                    + queuePosition;
             }
-            catch (InvalidOperationException)
-            {
-                return "unknown";
-            }
+            return result;
         }
     }
 }

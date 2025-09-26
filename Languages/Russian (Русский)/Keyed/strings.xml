@@ -3,7 +3,6 @@
 	<TabArtView>Просмотр</TabArtView>
 	<AiArtInProgress>Изображение генерируется... Пожалуйста, подождите</AiArtInProgress>
 	<AiArtQueuePosition>В очереди: </AiArtQueuePosition>
-	<AiArtLimit>Превышен лимит. Попробуйте позднее</AiArtLimit>
 	<AiArtError>Ошибка</AiArtError>
 	<AiArtGizmoTooltip>Нажмите для генерации изображения</AiArtGizmoTooltip>
 </LanguageData>

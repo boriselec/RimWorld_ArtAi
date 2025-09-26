@@ -1,3 +1,5 @@
+using ArtAi.util;
+
 namespace ArtAi.data
 {
     public struct Description

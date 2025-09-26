@@ -6,16 +6,14 @@ namespace ArtAi
 {
     public class ArtAiSettings : ModSettings
     {
-        public static string ServerUrl = "https://boriselec.com/rimworld-art/generate";
+        public static string ServerUrl = "https://boriselec.com/rimworld-art";
+
         public static bool ShowGizmo = true;
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(
-                ref ServerUrl,
-                "serverUrl",
-                "https://boriselec.com/rimworld-art/generate");
-            Scribe_Values.Look(ref ShowGizmo, "showGizmo", true);
+            Scribe_Values.Look(ref ServerUrl, "serverUrl", ServerUrl);
+            Scribe_Values.Look(ref ShowGizmo, "showGizmo", ShowGizmo);
             base.ExposeData();
         }
     }
@@ -37,11 +35,11 @@ namespace ArtAi
         {
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
+            listingStandard.CheckboxLabeled("Show gizmo", ref ArtAiSettings.ShowGizmo);
+            listingStandard.Gap();
             listingStandard.Label("Generation server url");
             ArtAiSettings.ServerUrl = listingStandard.TextEntry(
                 ArtAiSettings.ServerUrl);
-            listingStandard.Gap();
-            listingStandard.CheckboxLabeled("Show gizmo", ref ArtAiSettings.ShowGizmo);
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
         }

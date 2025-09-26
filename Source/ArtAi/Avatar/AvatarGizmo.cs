@@ -20,29 +20,14 @@ namespace ArtAi.Avatar
             return new GizmoResult(0);
         }
 
-        private Pawn GetPawn()
+        private Pawn GetPawn() => _thing switch
         {
-            if (_thing is Pawn pawn)
-            {
-                return pawn;
-            }
-            else if (_thing is Corpse corpse)
-            {
-                return corpse.InnerPawn;
-            }
-            else if (_thing is Building_CorpseCasket casket)
-            {
-                return casket.Corpse?.InnerPawn;
-            }
-            else if (_thing is Building_Enterable enterable)
-            {
-                return enterable.SelectedPawn;
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-        }
+            Pawn pawn => pawn,
+            Corpse corpse => corpse.InnerPawn,
+            Building_CorpseCasket casket => casket.Corpse?.InnerPawn,
+            Building_Enterable enterable => enterable.SelectedPawn,
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
         public override float GetWidth(float maxWidth) => 75f;
     }

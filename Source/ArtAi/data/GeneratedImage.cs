@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Verse;
 
@@ -25,7 +24,7 @@ namespace ArtAi.data
             return new GeneratedImage(Status, texture, Description);
         }
 
-        public static GeneratedImage InProgress(String description)
+        public static GeneratedImage InProgress(string description)
         {
             return InProgress(null, description);
         }
@@ -38,7 +37,7 @@ namespace ArtAi.data
                 description);
         }
 
-        public static GeneratedImage Done(Texture2D texture, String description)
+        public static GeneratedImage Done(Texture2D texture, string description)
         {
             return new GeneratedImage(GenerationStatus.Done, texture, description);
         }
