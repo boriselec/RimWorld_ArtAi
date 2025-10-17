@@ -29,6 +29,7 @@ namespace ArtAi
             catch (Exception e)
             {
                 Log.Error(e.ToString());
+                Queued.Clear();
                 return GeneratedImage.Error();
             }
         }
