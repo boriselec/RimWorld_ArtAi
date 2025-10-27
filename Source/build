@@ -3,7 +3,7 @@ set -euo pipefail
 
 # build - Build the ArtAi RimWorld mod (macOS / Unix)
 
-CSPROJ="Source/ArtAi.csproj"
+CSPROJ="ArtAi.csproj"
 
 echo "Building project: $CSPROJ"
 

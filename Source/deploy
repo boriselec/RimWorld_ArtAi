@@ -12,20 +12,20 @@ rm -rf "$RIMWORLD_MODS_PATH"
 mkdir -p "$RIMWORLD_MODS_PATH"
 
 # Copy version folders (1.*) - excluding dot files/folders
-for version_dir in 1.*; do
+for version_dir in ../1.*; do
     if [[ -d "$version_dir" ]]; then
         echo "Copying $version_dir..."
-        rsync -av --exclude='.*' "$version_dir/" "$RIMWORLD_MODS_PATH/$version_dir/"
+        rsync -av --exclude='.*' "$version_dir/" "$RIMWORLD_MODS_PATH/$(basename "$version_dir")/"
     fi
 done
 
 # Copy specific folders and files - excluding dot files/folders
-for item in About Languages LICENSE; do
+for item in ../About ../Languages ../LICENSE; do
     if [[ -e "$item" ]]; then
         echo "Copying $item..."
         if [[ -d "$item" ]]; then
             # Directory: use rsync to exclude dot files/folders
-            rsync -av --exclude='.*' "$item/" "$RIMWORLD_MODS_PATH/$item/"
+            rsync -av --exclude='.*' "$item/" "$RIMWORLD_MODS_PATH/$(basename "$item")/"
         else
             # File: copy directly
             cp "$item" "$RIMWORLD_MODS_PATH/"

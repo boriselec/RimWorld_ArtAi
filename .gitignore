@@ -4,3 +4,4 @@ packages/
 *.user
 .aider*
 .env
+Source/Tests/**/bin/

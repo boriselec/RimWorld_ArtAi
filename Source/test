@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Building..."
+dotnet build Tests/ArtAiTests.csproj
+
+echo "Running tests..."
+mono Tests/bin/Debug/net472/ArtAiTests.exe
+
+echo "Done"
