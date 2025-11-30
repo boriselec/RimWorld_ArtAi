@@ -42,14 +42,8 @@ namespace ArtAi
                 .Replace("  ", " ");
             Log.Message("AiArt. prompt: " + prompt);
 
-            // Include the user ID to promote fairness in the generation
-            // queue and prevent any single user from dominating it.
-            // For non steam users is not specified.
-            string userId = SteamUtil.GetUserIdHash();
-
             string postData = @"{
                 ""prompt"": """ + prompt + @""",
-                ""userId"": """ + userId + @""",
                 ""language"": """ + description.Language + @"""
             }";
             var rs = HttpUtil.DoPost("/prompt", postData);

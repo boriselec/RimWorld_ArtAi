@@ -14,10 +14,9 @@
   <ItemGroup>
     <PackageReference Include="Lib.Harmony" Version="2.4.0" IncludeAssets="compile" PrivateAssets="all" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Reference Include="Assembly-CSharp" HintPath="$(ManagedDirPath)\Assembly-CSharp.dll" Private="false" />
-    <Reference Include="com.rlabrecque.steamworks.net" HintPath="$(ManagedDirPath)\com.rlabrecque.steamworks.net.dll" Private="false" />
     <Reference Include="UnityEngine" HintPath="$(ManagedDirPath)\UnityEngine.dll" Private="false" />
     <Reference Include="UnityEngine.CoreModule" HintPath="$(ManagedDirPath)\UnityEngine.CoreModule.dll" Private="false" />
     <Reference Include="UnityEngine.IMGUIModule" HintPath="$(ManagedDirPath)\UnityEngine.IMGUIModule.dll" Private="false" />
