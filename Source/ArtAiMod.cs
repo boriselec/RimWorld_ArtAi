@@ -16,6 +16,11 @@ namespace ArtAi
             Scribe_Values.Look(ref ShowGizmo, "showGizmo", ShowGizmo);
             base.ExposeData();
         }
+
+        public static string GetUrl()
+        {
+            return ServerUrl.TrimEnd('/');
+        }
     }
 
     public class ArtAiMod : Mod

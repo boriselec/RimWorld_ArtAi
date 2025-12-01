@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using ArtAi.data;
+using ArtAi.data.comfyui;
 using ArtAi.util;
+using ArtAi.util.json;
 using UnityEngine;
 using Verse;
 
@@ -17,14 +18,12 @@ namespace ArtAi
         {
             try
             {
-                if (Queued.TryGetValue(description, out var rqUid))
+                if (!Queued.TryGetValue(description, out var rqUid))
                 {
-                    return Get(rqUid, description);
+                    rqUid = Enqueue(description);
+                    Queued[description] = rqUid;
                 }
-                else
-                {
-                    return Enqueue(description);
-                }
+                return Get(rqUid, description);
             }
             catch (Exception e)
             {
@@ -34,7 +33,7 @@ namespace ArtAi
             }
         }
 
-        private static GeneratedImage Enqueue(Description description)
+        private static string Enqueue(Description description)
         {
             string prompt = (description.ThingDescription
                              + " " + description.ArtDescription)
@@ -42,29 +41,32 @@ namespace ArtAi
                 .Replace("  ", " ");
             Log.Message("AiArt. prompt: " + prompt);
 
-            string postData = @"{
-                ""prompt"": """ + prompt + @""",
-                ""language"": """ + description.Language + @"""
-            }";
-            var rs = HttpUtil.DoPost("/prompt", postData);
+            string postData = new Dictionary<string, object>
+            {
+                { "prompt", prompt },
+                { "language", description.Language }
+            }.ToJson();
 
-            string rqUid = GetJsonField(rs, "prompt_id");
-            string queuePosition = GetJsonField(rs, "artAiQueuePosition");
+            var rs = HttpUtil.DoPost(ArtAiSettings.GetUrl() + "/prompt", postData);
+
+            var promptRs = rs.FromJson<PromptRs>();
+            string rqUid = promptRs.prompt_id;
 
             if (string.IsNullOrWhiteSpace(rqUid))
             {
-                Log.Error("No prompt_id");
-                return GeneratedImage.Error();
+                throw new Exception("Unexpected /prompt response");
             }
-            Queued[description] = rqUid;
-            return GeneratedImage.InProgress(QueuedMessage(queuePosition));
+            return rqUid;
         }
 
         private static GeneratedImage Get(string rqUid, Description description)
         {
-            var rs = HttpUtil.DoGetText("/history/" + rqUid);
-            var filename = GetJsonField(rs, "filename");
-            var queuePosition = GetJsonField(rs, "artAiQueuePosition");
+            var rs = HttpUtil.DoGetText(ArtAiSettings.GetUrl() + "/history/" + rqUid);
+            var historyRs = rs.FromJson<Dictionary<string, HistoryRsItem>>();
+            var (filename, queuePosition) = historyRs.TryGetValue(rqUid, out var item)
+                ? (item.Filename(), item.artAiQueuePosition)
+                : (null, null);
+
             return filename == null
                 ? GeneratedImage.InProgress(QueuedMessage(queuePosition))
                 : Load(filename, description);
@@ -72,45 +74,21 @@ namespace ArtAi
 
         private static GeneratedImage Load(string filename, Description description)
         {
-            var rs = HttpUtil.DoGetImage("/view?filename=" + filename);
+            var url = ArtAiSettings.GetUrl();
+            var rs = HttpUtil.DoGetImage(url + "/view?filename=" + filename);
 
             Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
             tex.LoadImage(rs);
             tex.Apply();
             if (tex.NullOrBad() || tex.height * tex.width <= 64)
             {
-                return GeneratedImage.Error();
+                throw new Exception("Broken texture");
             }
 
             return GeneratedImage.Done(tex, description.ArtDescription);
         }
 
-        // This method uses regex for simple JSON field extraction instead of a full
-        // JSON parser because the project targets .NET Framework 4.7.2,
-        // where built-in JSON libraries like System.Text.Json are not available,
-        // and external dependencies (e.g., Newtonsoft.Json) are avoided
-        // to keep the mod lightweight.
-        private static string GetJsonField(string json, string fieldName)
-        {
-            // The regex pattern matches JSON fields in the format "fieldName": value.
-            // Examples of matches:
-            // - "prompt_id": "abc123"
-            // - "artAiQueuePosition": 5
-            // - "filename": null
-            // - "status": true
-            string pattern = $@"""{fieldName}""\s*:\s*(?:""([^""]*)""|([^,\}}\]\s]*))";
-            Match match = Regex.Match(json, pattern);
-            if (match.Success)
-            {
-                string value = match.Groups[1].Success
-                    ? match.Groups[1].Value
-                    : match.Groups[2].Value;
-                return string.IsNullOrEmpty(value) ? null : value;
-            }
-            return null;
-        }
-
-        private static string QueuedMessage(string queuePosition)
+        private static string QueuedMessage(int? queuePosition)
         {
             string result = "AiArtInProgress".Translate();
             if (queuePosition != null)

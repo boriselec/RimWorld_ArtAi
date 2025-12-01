@@ -11,9 +11,8 @@ namespace ArtAi.util
             Timeout = TimeSpan.FromSeconds(3)
         };
 
-        public static string DoPost(string path, string postData)
+        public static string DoPost(string url, string postData)
         {
-            var url = GetBaseUrl() + path;
             var content = new StringContent(
                 postData,
                 Encoding.UTF8,
@@ -23,23 +22,19 @@ namespace ArtAi.util
             return response.Content.ReadAsStringAsync().Result;
         }
 
-        public static string DoGetText(string path)
+        public static string DoGetText(string url)
         {
-            var url = GetBaseUrl() + path;
             var response = client.GetAsync(url).Result;
             ThrowIfError(response.StatusCode);
             return response.Content.ReadAsStringAsync().Result;
         }
 
-        public static byte[] DoGetImage(string path)
+        public static byte[] DoGetImage(string url)
         {
-            var url = GetBaseUrl() + path;
             var response = client.GetAsync(url).Result;
             ThrowIfError(response.StatusCode);
             return response.Content.ReadAsByteArrayAsync().Result;
         }
-
-        private static string GetBaseUrl() => ArtAiSettings.ServerUrl.TrimEnd('/');
 
         private static void ThrowIfError(HttpStatusCode code)
         {
