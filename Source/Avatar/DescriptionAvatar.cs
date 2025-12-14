@@ -182,20 +182,26 @@ namespace ArtAi.Avatar
             var gender = pawn.gender;
             var storyAdulthood = story.Adulthood;
             var storyChildhood = story.Childhood;
+
+            string storyString;
             if (storyAdulthood != null)
             {
-                return StoryTitleUntranslated(storyAdulthood, gender)
-                    .Replace("unknown", "mysterious");
+                storyString = StoryTitleUntranslated(storyAdulthood, gender);
             }
-            if (storyChildhood != null)
+            else if (storyChildhood != null)
             {
-                return StoryTitleUntranslated(storyChildhood, gender)
+                storyString = StoryTitleUntranslated(storyChildhood, gender)
                     .Replace("newborn", "")
                     .Replace(" child", "-born")
                     .Replace(" kid", "-born")
                     .Replace("child", "");
             }
-            return "";
+            else
+            {
+                storyString = "";
+            }
+            return storyString
+                .Replace("unknown", "mysterious");
         }
 
         private static string StoryTitleUntranslated(BackstoryDef backstoryDef, Gender gender)
