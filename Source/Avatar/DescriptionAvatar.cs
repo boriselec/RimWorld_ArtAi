@@ -69,38 +69,38 @@ namespace ArtAi.Avatar
         {
             string xenotypeName = pawn.genes?.Xenotype?.defName ?? "";
             List<string> geneLabels = GetGenesLabels(pawn.genes);
-            
-            if (xenotypeName == "Neanderthal" || 
-                (HasAllGenes(geneLabels, "robust", "slow study") && 
+
+            if (xenotypeName == "Neanderthal" ||
+                (HasAllGenes(geneLabels, "robust", "slow study") &&
                  HasAnyGenes(geneLabels, "cold tolerant", "cold super-tolerant")))
             {
                 return "neanderthal";
             }
-            
-            if (xenotypeName == "Impid" || 
+
+            if (xenotypeName == "Impid" ||
                 HasAllGenes(geneLabels, "fire spew", "mini-horns"))
             {
                 return "two-horned imp";
             }
-            
-            if (xenotypeName == "Sanguophage" || 
-                (HasAllGenes(geneLabels, "bloodfeeder", "ageless", "deathless", "non-senescent") && 
+
+            if (xenotypeName == "Sanguophage" ||
+                (HasAllGenes(geneLabels, "bloodfeeder", "ageless", "deathless", "non-senescent") &&
                  HasAnyGenes(geneLabels, "mild UV sensitivity", "intense UV sensitivity")))
             {
                 return "vampire";
             }
-            
-            if (xenotypeName == "Waster" || 
-                (HasAllGenes(geneLabels, "pollution stimulus") && 
+
+            if (xenotypeName == "Waster" ||
+                (HasAllGenes(geneLabels, "pollution stimulus") &&
                  HasAnyGenes(geneLabels, "partial antitoxic lungs", "total antitoxic lungs") &&
                  HasAnyGenes(geneLabels, "unattractive", "very unattractive")))
             {
                 // wasters are basically ghouls: unattractive gray-skinned post-apocalyptic human-like creatures
                 return "ghoul";
             }
-            
-            if (xenotypeName == "Dirtmole" || 
-                (HasAllGenes(geneLabels, "nearsighted") && 
+
+            if (xenotypeName == "Dirtmole" ||
+                (HasAllGenes(geneLabels, "nearsighted") &&
                  HasAnyGenes(geneLabels, "mild UV sensitivity", "intense UV sensitivity") &&
                  HasAnyGenes(geneLabels, "strong mining", "great mining")))
             {
@@ -119,10 +119,10 @@ namespace ArtAi.Avatar
                 // probably need negative prompt "animal" or "4 legged" to get this right
                 return "snout humanlike piglin";
             }
-            
-            if (xenotypeName == "Hussar" || 
-                (HasAllGenes(geneLabels, "unstoppable") && 
-                 HasAnyGenes(geneLabels, "aggressive", "hyper-aggressive") && 
+
+            if (xenotypeName == "Hussar" ||
+                (HasAllGenes(geneLabels, "unstoppable") &&
+                 HasAnyGenes(geneLabels, "aggressive", "hyper-aggressive") &&
                  HasAnyGenes(geneLabels, "strong melee", "great melee") &&
                  HasAnyGenes(geneLabels, "strong shooting", "great shooting")))
             {
@@ -140,7 +140,7 @@ namespace ArtAi.Avatar
             {
                 return "vulcan sci-fi";
             }
-            
+
             return "human";
         }
 
@@ -156,7 +156,7 @@ namespace ArtAi.Avatar
         private static string AgeTerms(Pawn pawn)
         {
             int age = pawn.ageTracker.AgeBiologicalYears;
-            return 
+            return
                 pawn.gender == Gender.Female && age < 3 ? "newborn girl"
                 : pawn.gender == Gender.Female && age < 7 ? "toddler girl"
                 : pawn.gender == Gender.Female && age < 13 ? "child girl"
@@ -164,7 +164,7 @@ namespace ArtAi.Avatar
                 : pawn.gender == Gender.Female && age < 45 ? "woman"
                 : pawn.gender == Gender.Female && age < 66 ? "middle-aged woman"
                 : pawn.gender == Gender.Female ? "senior woman"
-                    
+
                 : pawn.gender == Gender.Male && age < 3 ? "newborn boy"
                 : pawn.gender == Gender.Male && age < 7 ? "toddler boy"
                 : pawn.gender == Gender.Male && age < 13 ? "child boy"
