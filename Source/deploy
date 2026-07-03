@@ -1,39 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Define the RimWorld mods directory path
-RIMWORLD_MODS_PATH="/Users/boris/Library/Application Support/Steam/steamapps/common/RimWorld/RimWorldMac.app/Mods/RimWorld_ArtAi"
+# Run from the repo root regardless of where this script is invoked from.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+cd "$REPO_ROOT"
+
+# Where this mod gets installed.
+MOD_INSTALL_DIR="$HOME/Library/Application Support/Steam/steamapps/common/RimWorld/RimWorldMac.app/Mods/RimWorld_ArtAi"
 
 echo "Cleaning destination folder..."
 # Remove existing destination folder completely
-rm -rf "$RIMWORLD_MODS_PATH"
+rm -rf "$MOD_INSTALL_DIR"
 
 # Create fresh destination directory
-mkdir -p "$RIMWORLD_MODS_PATH"
+mkdir -p "$MOD_INSTALL_DIR"
 
-# Copy version folders (1.*) - excluding dot files/folders
-for version_dir in ../1.*; do
-    if [[ -d "$version_dir" ]]; then
-        echo "Copying $version_dir..."
-        rsync -av --exclude='.*' "$version_dir/" "$RIMWORLD_MODS_PATH/$(basename "$version_dir")/"
-    fi
-done
-
-# Copy specific folders and files - excluding dot files/folders
-for item in ../About ../Languages ../LICENSE; do
+# Copy version folders (1.*) plus mod metadata, excluding dot files/folders.
+# No trailing slash on the source: rsync recreates each item (dir or file)
+# under the freshly-wiped destination.
+for item in 1.* About Languages LICENSE; do
     if [[ -e "$item" ]]; then
         echo "Copying $item..."
-        if [[ -d "$item" ]]; then
-            # Directory: use rsync to exclude dot files/folders
-            rsync -av --exclude='.*' "$item/" "$RIMWORLD_MODS_PATH/$(basename "$item")/"
-        else
-            # File: copy directly
-            cp "$item" "$RIMWORLD_MODS_PATH/"
-        fi
+        rsync -av --exclude='.*' "$item" "$MOD_INSTALL_DIR/"
     fi
 done
-
-# Navigate to the destination directory
-cd "$RIMWORLD_MODS_PATH"
 
 echo "Mod deployed successfully with complete rewrite!"

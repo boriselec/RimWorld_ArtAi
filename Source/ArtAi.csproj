@@ -9,7 +9,7 @@
     <Deterministic>true</Deterministic>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-    <ManagedDirPath>\Users\boris\Library\Application Support\Steam\steamapps\common\RimWorld\RimWorldMac.app\Contents\Resources\Data\Managed</ManagedDirPath>
+    <ManagedDirPath Condition="'$(ManagedDirPath)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/RimWorld/RimWorldMac.app/Contents/Resources/Data/Managed</ManagedDirPath>
   </PropertyGroup>
 
   <ItemGroup>
