@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using ArtAi.data;
 using JetBrains.Annotations;
 using UnityEngine;
+using Verse;
+using GenJob = ArtAi.AsyncGenerator.GenJob;
 
 namespace ArtAi
 {
@@ -75,26 +77,45 @@ namespace ArtAi
 
         private static GeneratedImage GenerateAndRefreshCaches(Description description)
         {
-            GeneratedImage generatedImage = Generator.GetOrEnqueue(description);
-            switch (generatedImage.Status)
+            GenJob job = AsyncGenerator.GetOrStart(description);
+            switch (job.State)
             {
-                case GenerationStatus.Done:
-                case GenerationStatus.Outdated:
-                    var png = generatedImage.Texture.EncodeToPNG();
-                    ImageRepo.SaveImage(png, description);
+                case AsyncGenerator.JobState.Done:
+                    // bytes already saved to disk by the worker
+                    AsyncGenerator.Remove(description);
                     ClearCache(description);
-                    return generatedImage;
-                case GenerationStatus.InProgress:
-                    var inProgressDescription = generatedImage.Description;
+                    // existing path: loads file and builds texture on the main thread
+                    return Get(description);
+                case AsyncGenerator.JobState.Error:
+                    AsyncGenerator.Remove(description);
+                    if (job.ErrorMessage != null)
+                    {
+                        Log.Error(job.ErrorMessage);
+                    }
+                    return GeneratedImage.Error();
+                default:
+                    // New / Enqueued -> still in progress
                     var lastImage = CachedImageRepo.GetLastGeneratedImage(description);
                     var inProgressImage = GeneratedImage.InProgress(
                         lastImage?.Texture,
-                        inProgressDescription);
+                        QueuedMessage(job.QueuePosition >= 0 ? job.QueuePosition : (int?)null));
                     InProgress[description] = new CachedImage(inProgressImage);
                     return inProgressImage;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private static string QueuedMessage(int? queuePosition)
+        {
+            string result = "AiArtInProgress".Translate();
+            if (queuePosition != null)
+            {
+                result = result
+                    + Environment.NewLine
+                    + Environment.NewLine
+                    + "AiArtQueuePosition".Translate()
+                    + queuePosition;
+            }
+            return result;
         }
 
         private static void ClearCache(Description description)

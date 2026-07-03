@@ -8,11 +8,12 @@ namespace ArtAi.util
     public static class HttpUtil
     {
         private static readonly HttpClient client = new HttpClient {
-            Timeout = TimeSpan.FromSeconds(3)
+            Timeout = TimeSpan.FromSeconds(10)
         };
 
         public static string DoPost(string url, string postData)
         {
+            BgLog.Message("POST " + url);
             var content = new StringContent(
                 postData,
                 Encoding.UTF8,
@@ -24,6 +25,7 @@ namespace ArtAi.util
 
         public static string DoGetText(string url)
         {
+            BgLog.Message("GET " + url);
             var response = client.GetAsync(url).Result;
             ThrowIfError(response.StatusCode);
             return response.Content.ReadAsStringAsync().Result;
@@ -31,6 +33,7 @@ namespace ArtAi.util
 
         public static byte[] DoGetImage(string url)
         {
+            BgLog.Message("GET " + url);
             var response = client.GetAsync(url).Result;
             ThrowIfError(response.StatusCode);
             return response.Content.ReadAsByteArrayAsync().Result;

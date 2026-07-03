@@ -4,42 +4,19 @@ using ArtAi.data;
 using ArtAi.data.comfyui;
 using ArtAi.util;
 using ArtAi.util.json;
-using UnityEngine;
-using Verse;
 
 namespace ArtAi
 {
+    // Stateless network helpers. Safe to call from a background thread:
+    // no Unity API and no Verse.Log here.
     public static class Generator
     {
-        private static readonly Dictionary<Description, string> Queued
-            = new Dictionary<Description, string>();
-
-        public static GeneratedImage GetOrEnqueue(Description description)
-        {
-            try
-            {
-                if (!Queued.TryGetValue(description, out var rqUid))
-                {
-                    rqUid = Enqueue(description);
-                    Queued[description] = rqUid;
-                }
-                return Get(rqUid, description);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e.ToString());
-                Queued.Clear();
-                return GeneratedImage.Error();
-            }
-        }
-
-        private static string Enqueue(Description description)
+        public static string Enqueue(Description description)
         {
             string prompt = (description.ThingDescription
                              + " " + description.ArtDescription)
                 .Replace('\n', ' ')
                 .Replace("  ", " ");
-            Log.Message("AiArt. prompt: " + prompt);
 
             string postData = new Dictionary<string, object>
             {
@@ -59,47 +36,19 @@ namespace ArtAi
             return rqUid;
         }
 
-        private static GeneratedImage Get(string rqUid, Description description)
+        public static (string filename, int? queuePosition) PollHistory(string rqUid)
         {
             var rs = HttpUtil.DoGetText(ArtAiSettings.GetUrl() + "/history/" + rqUid);
             var historyRs = rs.FromJson<Dictionary<string, HistoryRsItem>>();
-            var (filename, queuePosition) = historyRs.TryGetValue(rqUid, out var item)
+            return historyRs.TryGetValue(rqUid, out var item)
                 ? (item.Filename(), item.artAiQueuePosition)
                 : (null, null);
-
-            return filename == null
-                ? GeneratedImage.InProgress(QueuedMessage(queuePosition))
-                : Load(filename, description);
         }
 
-        private static GeneratedImage Load(string filename, Description description)
+        public static byte[] DownloadImage(string filename)
         {
             var url = ArtAiSettings.GetUrl();
-            var rs = HttpUtil.DoGetImage(url + "/view?filename=" + filename);
-
-            Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
-            tex.LoadImage(rs);
-            tex.Apply();
-            if (tex.NullOrBad() || tex.height * tex.width <= 64)
-            {
-                throw new Exception("Broken texture");
-            }
-
-            return GeneratedImage.Done(tex, description.ArtDescription);
-        }
-
-        private static string QueuedMessage(int? queuePosition)
-        {
-            string result = "AiArtInProgress".Translate();
-            if (queuePosition != null)
-            {
-                result = result
-                    + Environment.NewLine
-                    + Environment.NewLine
-                    + "AiArtQueuePosition".Translate()
-                    + queuePosition;
-            }
-            return result;
+            return HttpUtil.DoGetImage(url + "/view?filename=" + filename);
         }
     }
 }
