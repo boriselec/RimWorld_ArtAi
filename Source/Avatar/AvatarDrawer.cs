@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ArtAi.data;
 using RimWorld;
 using UnityEngine;
@@ -16,6 +17,10 @@ namespace ArtAi.Avatar
 
         private static readonly Texture2D IconOutdated
             = ContentFinder<Texture2D>.Get("UI/Overlays/Arrow");
+
+        // dead-pawn grayscale+ribbon textures, keyed by source texture instance id
+        private static readonly Dictionary<int, Texture2D> GrayRibbonCache
+            = new Dictionary<int, Texture2D>();
 
         public static bool NeedDrawArt(Thing thing)
         {
@@ -206,9 +211,15 @@ namespace ArtAi.Avatar
 
         private static GeneratedImage TransformImage(Thing thing, GeneratedImage image)
         {
-            if (thing is Pawn pawn2 && pawn2.Dead)
+            if (thing is Pawn pawn2 && pawn2.Dead && image.Texture != null)
             {
-                Texture2D modifiedTexture = MakeGrayWithRibbon(image.Texture);
+                int key = image.Texture.GetInstanceID();
+                if (!GrayRibbonCache.TryGetValue(key, out var modifiedTexture))
+                {
+                    modifiedTexture = MakeGrayWithRibbon(image.Texture);
+                    GrayRibbonCache[key] = modifiedTexture;
+                }
+
                 return image.WithTexture(modifiedTexture);
             }
             else
