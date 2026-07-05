@@ -3,7 +3,7 @@
 all: build deploy
 
 build:
-	cd Source && dotnet build
+	cd Source && dotnet build -c Release
 
 deploy:
 	cd Source && ./deploy
