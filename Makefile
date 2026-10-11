@@ -8,5 +8,9 @@ build:
 deploy:
 	cd Source && ./deploy
 
+# run the net472 tests on the newest installed .NET
 test:
-	cd Source && ./test
+	dotnet build Source/Tests
+	cd Source/Tests/bin/Debug/net472 && \
+	echo '{"runtimeOptions":{"rollForward":"LatestMajor","framework":{"name":"Microsoft.NETCore.App","version":"0.0"}}}' > ArtAiTests.runtimeconfig.json && \
+	dotnet ArtAiTests.exe

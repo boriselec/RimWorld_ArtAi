@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <OutputType>Exe</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ArtAi.csproj" />
+    <Compile Include="../util/json/*.cs" />
+    <Compile Include="../data/comfyui/*.cs" />
   </ItemGroup>
 
 </Project>
