@@ -47,9 +47,14 @@ namespace ArtAi.data
             return new GeneratedImage(GenerationStatus.Outdated, texture, description);
         }
 
-        public static GeneratedImage Error()
+        // texture: previous image of the thing, if any
+        public static GeneratedImage Error(Texture2D texture, string message)
         {
-            return InProgress("AiArtError".Translate());
+            return new GeneratedImage(
+                GenerationStatus.Error,
+                texture,
+                "AiArtError".Translate() + ": " + message
+                + "\n\n" + "AiArtRetry".Translate());
         }
 
         public static GeneratedImage NeedGenerate()

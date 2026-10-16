@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ArtAi.util
 {
@@ -18,7 +19,7 @@ namespace ArtAi.util
                 postData,
                 Encoding.UTF8,
                 "application/json");
-            var response = client.PostAsync(url, content).Result;
+            var response = Send(() => client.PostAsync(url, content));
             ThrowIfError(response.StatusCode);
             return response.Content.ReadAsStringAsync().Result;
         }
@@ -26,7 +27,7 @@ namespace ArtAi.util
         public static string DoGetText(string url)
         {
             BgLog.Message("GET " + url);
-            var response = client.GetAsync(url).Result;
+            var response = Send(() => client.GetAsync(url));
             ThrowIfError(response.StatusCode);
             return response.Content.ReadAsStringAsync().Result;
         }
@@ -34,9 +35,22 @@ namespace ArtAi.util
         public static byte[] DoGetImage(string url)
         {
             BgLog.Message("GET " + url);
-            var response = client.GetAsync(url).Result;
+            var response = Send(() => client.GetAsync(url));
             ThrowIfError(response.StatusCode);
             return response.Content.ReadAsByteArrayAsync().Result;
+        }
+
+        // Connection errors and timeouts come wrapped in AggregateException from .Result
+        private static HttpResponseMessage Send(Func<Task<HttpResponseMessage>> request)
+        {
+            try
+            {
+                return request().Result;
+            }
+            catch (AggregateException e)
+            {
+                throw new ServerUnavailableException(e.GetBaseException().Message);
+            }
         }
 
         private static void ThrowIfError(HttpStatusCode code)
@@ -45,6 +59,14 @@ namespace ArtAi.util
             {
                 throw new HttpRequestException("Error code: " + code);
             }
+        }
+    }
+
+    // The server did not answer at all (not running, unreachable, timeout)
+    public class ServerUnavailableException : Exception
+    {
+        public ServerUnavailableException(string message) : base(message)
+        {
         }
     }
 }

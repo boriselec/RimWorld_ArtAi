@@ -4,5 +4,121 @@
 	<AiArtInProgress>Изображение генерируется... Пожалуйста, подождите</AiArtInProgress>
 	<AiArtQueuePosition>В очереди: </AiArtQueuePosition>
 	<AiArtError>Ошибка</AiArtError>
-	<AiArtGizmoTooltip>Нажмите для генерации изображения</AiArtGizmoTooltip>
+	<AiArtRetry>Нажмите и выберите «Повторить»</AiArtRetry>
+	<AiArtGizmoTooltip>Нажмите, чтобы открыть меню: генерация картинки, настройки сервера</AiArtGizmoTooltip>
+
+	<!-- меню картинки -->
+	<AiArtMenuView>Посмотреть</AiArtMenuView>
+	<AiArtMenuGenerate>Сгенерировать</AiArtMenuGenerate>
+	<AiArtMenuRetry>Повторить</AiArtMenuRetry>
+	<AiArtMenuRegenerate>Перегенерировать</AiArtMenuRegenerate>
+	<AiArtMenuPrompt>Посмотреть промпт</AiArtMenuPrompt>
+	<AiArtMenuOpenImage>Открыть картинку</AiArtMenuOpenImage>
+	<AiArtMenuServer>Настроить сервер</AiArtMenuServer>
+	<AiArtMenuStartServer>Старт сервера</AiArtMenuStartServer>
+	<AiArtStatus>Статус: {0}</AiArtStatus>
+	<AiArtStatusQueue>{0} в очереди</AiArtStatusQueue>
+	<AiArtStatusGenerating>генерируется</AiArtStatusGenerating>
+	<AiArtStatusDone>готово</AiArtStatusDone>
+	<AiArtStatusOutdated>описание изменилось</AiArtStatusOutdated>
+	<AiArtStatusNotGenerated>не сгенерировано</AiArtStatusNotGenerated>
+	<AiArtStatusError>ошибка</AiArtStatusError>
+	<AiArtStatusAvailable>сервер доступен</AiArtStatusAvailable>
+	<AiArtStatusUnavailable>сервер недоступен</AiArtStatusUnavailable>
+	<AiArtStatusChecking>доступность сервера проверяется</AiArtStatusChecking>
+
+	<!-- окно промпта -->
+	<AiArtPromptTitle>Промпт</AiArtPromptTitle>
+	<AiArtPromptHint>Добавьте описание недостающих деталей с новой строки. Рекомендуется не менять базовый сгенерированный текст. Его можно восстановить по кнопке «Из текста игры».</AiArtPromptHint>
+	<AiArtPromptReset>Из текста игры</AiArtPromptReset>
+
+	<!-- окно картинки -->
+	<AiArtButtonPrompt>Промпт</AiArtButtonPrompt>
+
+	<!-- окно сервера -->
+	<AiArtServerTitle>Сервер AI art</AiArtServerTitle>
+	<AiArtServerUse>Где генерируются картинки</AiArtServerUse>
+	<AiArtServerPublic>Публичный сервер (boriselec.com)</AiArtServerPublic>
+	<AiArtServerLocal>Локальный сервер на этом компьютере ({0})</AiArtServerLocal>
+	<AiArtLocalTitle>Локальный сервер</AiArtLocalTitle>
+	<AiArtLocalStatus>Статус: {0}</AiArtLocalStatus>
+	<AiArtLocalRunning>запущен: {0}</AiArtLocalRunning>
+	<AiArtLocalStarting>запускается. При первом запуске ставятся библиотеки, это может занять несколько минут: см. консольное окно</AiArtLocalStarting>
+	<AiArtLocalChecking>проверка...</AiArtLocalChecking>
+	<AiArtLocalNotRunning>не запущен</AiArtLocalNotRunning>
+	<AiArtLocalReadFirst>Прочитайте, прежде чем запускать</AiArtLocalReadFirst>
+	<AiArtLocalReadFirstText>Локальный сервер рисует картинки на вашей видеокарте моделью FLUX.2 klein 4B.\n- Нужна видеокарта NVIDIA от 6 ГБ видеопамяти и бесплатная программа uv (см. инструкцию ниже). Без такой видеокарты сервер может работать на процессоре: несколько минут на картинку и около 20 ГБ свободной оперативной памяти. Сервер сам выбирает при первом запуске.\n- При первом запуске скачивается около 3 ГБ библиотек и 11 ГБ файлов модели. Освободите на диске около 15 ГБ.\n- Ход работы виден в консольном окне. Сервер останавливается кнопкой «Остановить» или при выходе из игры.\n- Выберите выше «Локальный сервер», чтобы мод его использовал.</AiArtLocalReadFirstText>
+	<AiArtLocalStart>Запустить</AiArtLocalStart>
+	<AiArtLocalStop>Остановить</AiArtLocalStop>
+	<AiArtLocalOpenFolder>Открыть папку</AiArtLocalOpenFolder>
+	<AiArtLocalStartFailed>Не удалось запустить локальный сервер: {0}</AiArtLocalStartFailed>
+	<AiArtLocalSettings>Настройки локального сервера (после сохранения перезапустите сервер)</AiArtLocalSettings>
+	<AiArtLocalDevice>Где работает</AiArtLocalDevice>
+	<AiArtLocalDevice_gpu>видеокарта (NVIDIA)</AiArtLocalDevice_gpu>
+	<AiArtLocalDevice_cpu>процессор: минуты на картинку</AiArtLocalDevice_cpu>
+	<AiArtLocalNoConfig>Настройки появятся после первого запуска сервера: он проверит видеокарту и создаст под неё файл настроек.</AiArtLocalNoConfig>
+	<AiArtLocalPreset>Видеопамять</AiArtLocalPreset>
+	<AiArtLocalPreset_auto>авто: по видеокарте</AiArtLocalPreset_auto>
+	<AiArtLocalPreset_high>high: от 16 ГБ</AiArtLocalPreset_high>
+	<AiArtLocalPreset_mid>mid: 10-12 ГБ</AiArtLocalPreset_mid>
+	<AiArtLocalPreset_low>low: 6-8 ГБ</AiArtLocalPreset_low>
+	<AiArtLocalModel>Файл модели</AiArtLocalModel>
+	<AiArtLocalModelQ5>лучше качество</AiArtLocalModelQ5>
+	<AiArtLocalModelQ4>меньше памяти</AiArtLocalModelQ4>
+	<AiArtLocalWidth>Ширина картинки</AiArtLocalWidth>
+	<AiArtLocalHeight>Высота картинки</AiArtLocalHeight>
+	<AiArtLocalSteps>Шаги (для этой модели лучше 4)</AiArtLocalSteps>
+	<AiArtLocalPort>Порт</AiArtLocalPort>
+	<AiArtLocalStyle>Стиль, добавляется перед каждым описанием</AiArtLocalStyle>
+	<AiArtLocalModelsFolder>Папка моделей (пусто: по умолчанию)</AiArtLocalModelsFolder>
+	<AiArtLocalSave>Сохранить настройки</AiArtLocalSave>
+	<AiArtLocalSaved>Сохранено. Перезапустите локальный сервер, чтобы применить настройки.</AiArtLocalSaved>
+	<AiArtLocalManualTitle>Запуск без игры</AiArtLocalManualTitle>
+	<AiArtLocalManual>Например, на соседнем компьютере в локальной сети или чтобы сервер не закрывался вместе с игрой.
+1. Скопируйте папку сервера («Открыть папку») на тот компьютер и установите там uv (см. инструкцию ниже).
+2. Запустите run.bat (Windows) или «sh run.sh» (Linux). Запущенный так сервер не останавливается вместе с игрой: чтобы остановить, закройте его окно.
+3. Только для другого компьютера: в artai_config.json рядом с run.bat (появляется после первого запуска) укажите "host": "0.0.0.0", перезапустите сервер и разрешите его в брандмауэре.
+4. Введите http://IP-того-компьютера:8080 в «Адрес сервера» вверху этого окна и нажмите «Проверить» (8080 — это "port" в artai_config.json). На этом же компьютере просто выберите выше «Локальный сервер».</AiArtLocalManual>
+	<AiArtLocalInstructionsTitle>Инструкция</AiArtLocalInstructionsTitle>
+	<AiArtLocalInstructions>1. Установите uv, он сам ставит Python и все библиотеки. В Windows откройте PowerShell и выполните:\n    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"\nДругие системы: https://docs.astral.sh/uv/getting-started/installation/\nЕсли игра была запущена во время установки uv, перезапустите игру.\n\n2. Если на диске C: мало места, укажите в «Папка моделей» папку на другом диске (например, D:\AiModels) и сохраните настройки. По умолчанию модели кладутся в папку Hugging Face в профиле пользователя.\n\n3. Нажмите «Запустить». Откроется консольное окно: сначала ставятся библиотеки, потом скачивается модель, потом она загружается в видеокарту (или в память). Ход скачивания виден и во всплывающей подсказке картинки в игре. Следующие запуски занимают меньше минуты.\n\n4. Выберите «Локальный сервер» вверху этого окна. Уже готовые картинки останутся как есть; чтобы нарисовать картинку заново, нажмите на неё, выберите «Посмотреть» и нажмите «Перегенерировать».\n\nНастройки:\n- Где работает: сервер выбирает при первом запуске: видеокарту, если найдёт NVIDIA с CUDA, иначе процессор. У каждого свои файл модели и размер картинки: процессору нужны минуты на картинку, поэтому у него 512 и Q4_K_M.\n- Видеопамять: «авто» выбирает по видеокарте. Если генерация падает с «out of memory», выберите вариант ниже и/или файл модели Q4_K_M.\n- Ширина и высота: 768 — хороший вариант, 1024 — лучшее качество, меньше — быстрее. Используйте числа, кратные 16.\n- Стиль ставится перед каждым описанием, например «pencil sketch, » или «pixel art, ».\n\nЕсли что-то не работает:\n- «"uv" не является командой»: uv не установлен, или игра запущена до его установки.\n- «NVIDIA GPU with CUDA not found»: нет видеокарты NVIDIA или старый драйвер: обновите драйвер или выберите процессор в «Где работает».\n- «WinError 1114» про c10.dll: в Windows старая среда Microsoft Visual C++: установите новую с https://aka.ms/vs/17/release/vc_redist.x64.exe и запустите сервер снова.\n- «Cannot listen on ...»: сервер уже запущен, или порт занят другой программой: поменяйте порт.\n- Любая другая ошибка видна в консольном окне, при сбое оно не закрывается.\n\n«Открыть папку» открывает папку сервера: там artai_config.json с этими настройками, artai.py (сам сервер) и README.md с полной документацией. Там же сервер можно запустить вручную через run.bat.</AiArtLocalInstructions>
+
+	<!-- настройки мода -->
+	<AiArtSettingsShowGizmo>Показывать картинки колонистов и предметов искусства</AiArtSettingsShowGizmo>
+	<AiArtSettingsDoubleSize>Двойной размер картинки</AiArtSettingsDoubleSize>
+
+	<!-- адрес сервера и проверка -->
+	<AiArtServerUrl>Адрес сервера</AiArtServerUrl>
+	<AiArtServerTest>Проверить</AiArtServerTest>
+	<AiArtServerUrlHint>Мод отправляет запросы на этот адрес. Выбор выше подставляет его сам; можно ввести и другой, например сервер на другом компьютере.</AiArtServerUrlHint>
+	<AiArtTestRunning>Проверка...</AiArtTestRunning>
+	<AiArtTestLocal>Отвечает локальный сервер AI art: {0}</AiArtTestLocal>
+	<AiArtTestAnswers>Сервер отвечает</AiArtTestAnswers>
+	<AiArtTestNoAnswer>Нет ответа: {0}</AiArtTestNoAnswer>
+	<AiArtLocalPortTaken>не запущен: порт занят другой программой</AiArtLocalPortTaken>
+	<AiArtLocalSettingsFile>Изменение файла: {0}</AiArtLocalSettingsFile>
+	<AiArtLocalOpenAiPort>Порт API текстовой модели (0: выключен)</AiArtLocalOpenAiPort>
+
+	<!-- что сообщает локальный сервер; {0}, {1}... подставляет сервер -->
+	<AiArtServerState_starting>запускается</AiArtServerState_starting>
+	<AiArtServerState_checking>проверка файлов модели ({0})</AiArtServerState_checking>
+	<AiArtServerState_offline>Hugging Face недоступен, используется скачанная модель</AiArtServerState_offline>
+	<AiArtServerState_downloading>скачивание модели: {0} / {1} ГБ ({2}%)</AiArtServerState_downloading>
+	<AiArtServerState_loading>загрузка модели в видеокарту (пресет {0})</AiArtServerState_loading>
+	<AiArtServerState_ready>готов: {0}, пресет {1}, {2}</AiArtServerState_ready>
+	<AiArtServerState_loading_cpu>загрузка модели в память (процессор)</AiArtServerState_loading_cpu>
+	<AiArtServerState_ready_cpu>готов: {0}, процессор</AiArtServerState_ready_cpu>
+	<AiArtServerState_ready_mock>готов (mock: тестовые картинки без видеокарты)</AiArtServerState_ready_mock>
+	<AiArtServerState_downloaded>модель скачана</AiArtServerState_downloaded>
+	<AiArtServerState_error>модель не загрузилась: {0}</AiArtServerState_error>
+
+	<!-- текстовая модель -->
+	<AiArtLlmTitle>Использование текстовой LLM-модели</AiArtLlmTitle>
+	<AiArtLlmOff>API текстовой модели выключен: укажите его порт в настройках локального сервера выше.</AiArtLlmOff>
+	<AiArtLlmText>Пока локальный сервер запущен, его простую локальную модель можно использовать для генерации текста (Qwen3-4B — текстовая часть FLUX.2). Она понимает OpenAI API: просто укажите адрес ниже, например в моде EchoColony и подобных.</AiArtLlmText>
+	<AiArtLlmBaseUrl>Адрес</AiArtLlmBaseUrl>
+	<AiArtLlmChatUrl>Полный адрес чата</AiArtLlmChatUrl>
+	<AiArtLlmModelName>Имя модели</AiArtLlmModelName>
+	<AiArtLlmNote>Большинству программ нужен адрес, некоторые просят полный адрес чата. Подойдут любой API-ключ и любое имя модели. С другого компьютера укажите IP этого вместо localhost (см. «Запуск без игры»). Текстовые ответы и картинки делят одну видеокарту: пока генерируется одно, другое ждёт.</AiArtLlmNote>
+	<AiArtCopy>Копировать</AiArtCopy>
+	<AiArtCopied>Скопировано: {0}</AiArtCopied>
 </LanguageData>
