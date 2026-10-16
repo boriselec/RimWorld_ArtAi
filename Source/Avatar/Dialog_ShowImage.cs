@@ -1,21 +1,27 @@
-﻿using System;
+using ArtAi.data;
 using UnityEngine;
 using Verse;
 
 namespace ArtAi.Avatar
 {
+    // The enlarged image with "Regenerate" and "Prompt" buttons
     public class Dialog_ShowImage : Window
     {
-        private Texture2D Image;
+        private const float DefaultImageSide = 500f;
+        private const float ButHeight = 24f;
+        private const float ButTextMargin = 8f;
+        private const float ButSpacing = 6f;
+        // buttons below the image
+        private const float ButtonsRow = ButHeight + 10f;
 
-        public override Vector2 InitialSize => LastInitialSize;
+        public readonly Description Description;
 
-        private static float _menuOffset = 90f;
+        // shown until the thing has an image of its own (it always has, when opened from the menu)
+        private readonly Texture2D openedImage;
 
-        static Vector2 LastInitialSize = new Vector2(200f, 200f + _menuOffset);
-        static Vector2 LastInitialPos = new Vector2(-1f, -1f);
+        public override Vector2 InitialSize => WindowSize(DefaultImageSide);
 
-        public Dialog_ShowImage(Texture2D image)
+        public Dialog_ShowImage(Texture2D image, Description description)
         {
             closeOnCancel = true;
             closeOnAccept = false;
@@ -24,58 +30,58 @@ namespace ArtAi.Avatar
             resizeable = true;
             draggable = true;
 
-            Image = image;
+            openedImage = image;
+            Description = description;
         }
 
-        public override void PreOpen()
+        // window size for a square image of the given side
+        public static Vector2 WindowSize(float imageSide)
         {
-            base.PreOpen();
-            if (LastInitialPos.y == -1f && LastInitialPos.x == -1f)
-            {
-                windowRect.x = (Screen.width - windowRect.width) / 2f;
-                windowRect.y = (Screen.height - windowRect.height) / 2f;
-                LastInitialPos = windowRect.position;
-            }
-            else
-                windowRect.Set(LastInitialPos.x, LastInitialPos.y, windowRect.width, windowRect.height);
-
-            Vector2 center = new Vector2(windowRect.x + windowRect.width / 2f, windowRect.y + windowRect.height / 2f);
-            Vector2 size = new Vector2(Image.width, Image.height);
-            if (size.x > Screen.width - 200)
-            {
-                var newx = Screen.width - 200;
-                size.y = size.y * newx / size.x;
-                size.x = newx;
-            }
-            if (size.y > Screen.height - 100)
-            {
-                var newy = Screen.height - 100;
-                size.x = size.x * newy / size.y;
-                size.y = newy;
-            }
-            windowRect.Set(center.x - size.x / 2f, center.y - size.y / 2f, size.x, size.y);
+            return new Vector2(imageSide + 2 * StandardMargin, imageSide + ButtonsRow + 2 * StandardMargin);
         }
 
-        public override void PostClose()
+        // side of the square image that fits in the window size
+        public static float ImageSide(Vector2 windowSize)
         {
-            LastInitialSize = windowRect.size;
-            LastInitialPos = windowRect.position;
+            return Mathf.Min(windowSize.x - 2 * StandardMargin, windowSize.y - ButtonsRow - 2 * StandardMargin);
+        }
+
+        public override void PostOpen()
+        {
+            base.PostOpen();
+            ImageWindows.Arrange();
         }
 
         public override void DoWindowContents(Rect inRect)
         {
-            var recDiv = Image.width / Image.height - inRect.width / inRect.height;
-            var rect = (recDiv > 0)
-                ? new Rect(inRect.x, inRect.y, inRect.width, inRect.height / (1f + (inRect.height / inRect.width - Image.height / Image.width)))
-                : new Rect(inRect.x, inRect.y, inRect.width / (1f - recDiv), inRect.height);
+            // the current image: a regenerated one replaces the old one when it is ready
+            Texture2D image = ImageService.Get(Description).Texture ?? openedImage;
+            var imageRect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height - ButtonsRow);
+            GUI.DrawTexture(imageRect, image, ScaleMode.ScaleToFit);
 
-            rect.x += (inRect.width - rect.width) / 2f;
-            rect.y += (inRect.height - rect.height) / 2f;
-
-            rect.y -= _menuOffset / 2f;
-
-            GUI.DrawTexture(rect, Image);
+            float x = inRect.x;
+            float y = inRect.yMax - ButHeight;
+            // hidden while generating: the new image is on its way
+            if (!ImageService.IsGenerating(Description)
+                && SubtleButton(ref x, y, "AiArtMenuRegenerate".Translate()))
+            {
+                // a new seed, otherwise the server would return the same picture
+                ImageService.Generate(Description, seed: ImageMenu.NewSeed());
+            }
+            if (SubtleButton(ref x, y, "AiArtButtonPrompt".Translate()))
+            {
+                ImageWindows.OpenPrompt(Description);
+            }
         }
 
+        // Small subtle button (as the game's main tab buttons), so it doesn't distract from the image.
+        // Sized by its text: ButtonTextSubtle always draws the label with the Small font.
+        private static bool SubtleButton(ref float x, float y, string label)
+        {
+            Text.Font = GameFont.Small;
+            var rect = new Rect(x, y, Text.CalcSize(label).x + 2 * ButTextMargin, ButHeight);
+            x = rect.xMax + ButSpacing;
+            return Widgets.ButtonTextSubtle(rect, label, textLeftMargin: ButTextMargin);
+        }
     }
 }

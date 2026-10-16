@@ -16,10 +16,10 @@ rm -rf "$MOD_INSTALL_DIR"
 # Create fresh destination directory
 mkdir -p "$MOD_INSTALL_DIR"
 
-# Copy version folders (1.*) plus mod metadata, excluding dot files/folders.
+# Copy version folders (1.*) plus mod metadata and the local server, excluding dot files/folders.
 # No trailing slash on the source: rsync recreates each item (dir or file)
 # under the freshly-wiped destination.
-for item in 1.* About Languages LICENSE; do
+for item in 1.* About Languages LICENSE Server; do
     if [[ -e "$item" ]]; then
         echo "Copying $item..."
         rsync -av --exclude='.*' "$item" "$MOD_INSTALL_DIR/"

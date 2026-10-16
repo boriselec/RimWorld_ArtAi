@@ -4,5 +4,121 @@
 	<AiArtInProgress>Image is generating... Please wait</AiArtInProgress>
 	<AiArtQueuePosition>In queue: </AiArtQueuePosition>
 	<AiArtError>Error</AiArtError>
-	<AiArtGizmoTooltip>Click to generate image</AiArtGizmoTooltip>
+	<AiArtRetry>Click and choose "Try again"</AiArtRetry>
+	<AiArtGizmoTooltip>Click to open the menu: generate the image, server settings</AiArtGizmoTooltip>
+
+	<!-- image menu -->
+	<AiArtMenuView>View</AiArtMenuView>
+	<AiArtMenuGenerate>Generate</AiArtMenuGenerate>
+	<AiArtMenuRetry>Try again</AiArtMenuRetry>
+	<AiArtMenuRegenerate>Regenerate</AiArtMenuRegenerate>
+	<AiArtMenuPrompt>View prompt</AiArtMenuPrompt>
+	<AiArtMenuOpenImage>Open image</AiArtMenuOpenImage>
+	<AiArtMenuServer>Server settings</AiArtMenuServer>
+	<AiArtMenuStartServer>Start server</AiArtMenuStartServer>
+	<AiArtStatus>Status: {0}</AiArtStatus>
+	<AiArtStatusQueue>{0} in queue</AiArtStatusQueue>
+	<AiArtStatusGenerating>generating</AiArtStatusGenerating>
+	<AiArtStatusDone>ready</AiArtStatusDone>
+	<AiArtStatusOutdated>description has changed</AiArtStatusOutdated>
+	<AiArtStatusNotGenerated>not generated</AiArtStatusNotGenerated>
+	<AiArtStatusError>error</AiArtStatusError>
+	<AiArtStatusAvailable>server is available</AiArtStatusAvailable>
+	<AiArtStatusUnavailable>server is not available</AiArtStatusUnavailable>
+	<AiArtStatusChecking>server availability is being checked</AiArtStatusChecking>
+
+	<!-- prompt window -->
+	<AiArtPromptTitle>Prompt</AiArtPromptTitle>
+	<AiArtPromptHint>Add missing details on a new line. It is better not to change the base generated text; it can be restored with the "From game text" button.</AiArtPromptHint>
+	<AiArtPromptReset>From game text</AiArtPromptReset>
+
+	<!-- image window -->
+	<AiArtButtonPrompt>Prompt</AiArtButtonPrompt>
+
+	<!-- server window -->
+	<AiArtServerTitle>AI art server</AiArtServerTitle>
+	<AiArtServerUse>Where images are generated</AiArtServerUse>
+	<AiArtServerPublic>Public server (boriselec.com)</AiArtServerPublic>
+	<AiArtServerLocal>Local server on this computer ({0})</AiArtServerLocal>
+	<AiArtLocalTitle>Local server</AiArtLocalTitle>
+	<AiArtLocalStatus>Status: {0}</AiArtLocalStatus>
+	<AiArtLocalRunning>running: {0}</AiArtLocalRunning>
+	<AiArtLocalStarting>starting. The first start installs libraries, this can take several minutes: see the console window</AiArtLocalStarting>
+	<AiArtLocalChecking>checking...</AiArtLocalChecking>
+	<AiArtLocalNotRunning>not running</AiArtLocalNotRunning>
+	<AiArtLocalReadFirst>Read before starting</AiArtLocalReadFirst>
+	<AiArtLocalReadFirstText>The local server draws images on your own graphics card with the FLUX.2 klein 4B model.\n- Needs an NVIDIA graphics card with 6 GB of video memory or more and the free program uv (see the instructions below). Without such a card the server can work on the processor: it takes several minutes per image and about 20 GB of free RAM. The server chooses by itself on the first start.\n- The first start downloads about 3 GB of libraries and 11 GB of model files. Make sure there is about 15 GB of free disk space.\n- A console window shows the progress. The server stops with the Stop button or when you close the game.\n- Select "Local server" above so that the mod uses it.</AiArtLocalReadFirstText>
+	<AiArtLocalStart>Start</AiArtLocalStart>
+	<AiArtLocalStop>Stop</AiArtLocalStop>
+	<AiArtLocalOpenFolder>Open folder</AiArtLocalOpenFolder>
+	<AiArtLocalStartFailed>Cannot start the local server: {0}</AiArtLocalStartFailed>
+	<AiArtLocalSettings>Local server settings (restart the server after saving)</AiArtLocalSettings>
+	<AiArtLocalDevice>Runs on</AiArtLocalDevice>
+	<AiArtLocalDevice_gpu>graphics card (NVIDIA)</AiArtLocalDevice_gpu>
+	<AiArtLocalDevice_cpu>processor: minutes per image</AiArtLocalDevice_cpu>
+	<AiArtLocalNoConfig>The settings appear after the first start of the server: it checks the graphics card and creates the settings file for it.</AiArtLocalNoConfig>
+	<AiArtLocalPreset>Video memory</AiArtLocalPreset>
+	<AiArtLocalPreset_auto>auto: by the graphics card</AiArtLocalPreset_auto>
+	<AiArtLocalPreset_high>high: 16 GB and more</AiArtLocalPreset_high>
+	<AiArtLocalPreset_mid>mid: 10-12 GB</AiArtLocalPreset_mid>
+	<AiArtLocalPreset_low>low: 6-8 GB</AiArtLocalPreset_low>
+	<AiArtLocalModel>Model file</AiArtLocalModel>
+	<AiArtLocalModelQ5>better quality</AiArtLocalModelQ5>
+	<AiArtLocalModelQ4>less memory</AiArtLocalModelQ4>
+	<AiArtLocalWidth>Image width</AiArtLocalWidth>
+	<AiArtLocalHeight>Image height</AiArtLocalHeight>
+	<AiArtLocalSteps>Steps (4 is best for this model)</AiArtLocalSteps>
+	<AiArtLocalPort>Port</AiArtLocalPort>
+	<AiArtLocalStyle>Style, added before every description</AiArtLocalStyle>
+	<AiArtLocalModelsFolder>Models folder (empty: default)</AiArtLocalModelsFolder>
+	<AiArtLocalSave>Save settings</AiArtLocalSave>
+	<AiArtLocalSaved>Saved. Restart the local server to apply the settings.</AiArtLocalSaved>
+	<AiArtLocalManualTitle>Running without the game</AiArtLocalManualTitle>
+	<AiArtLocalManual>For example, on another computer in your network, or so that the server keeps running after the game is closed.
+1. Copy the server folder ("Open folder") to that computer and install uv there (see the instructions below).
+2. Run run.bat (Windows) or "sh run.sh" (Linux). Started this way, the server does not stop with the game: close its window to stop it.
+3. Another computer only: in artai_config.json next to run.bat (it appears after the first start) set "host": "0.0.0.0", restart the server and allow it in the firewall.
+4. Enter http://IP-of-that-computer:8080 in "Server address" at the top of this window and press "Test" (8080 is "port" in artai_config.json). On this computer simply select "Local server" above.</AiArtLocalManual>
+	<AiArtLocalInstructionsTitle>Instructions</AiArtLocalInstructionsTitle>
+	<AiArtLocalInstructions>1. Install uv, it installs Python and all libraries by itself. On Windows open PowerShell and run:\n    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"\nOther systems: https://docs.astral.sh/uv/getting-started/installation/\nIf the game was running while you installed uv, restart the game.\n\n2. If drive C: has little free space, set "Models folder" to a folder on another drive (e.g. D:\AiModels) and save the settings. By default models go to the Hugging Face folder in your user profile.\n\n3. Press Start. A console window opens: first the libraries are installed, then the model is downloaded, then it is loaded into the graphics card (or into memory). The image tooltip in the game shows the download progress. Next starts take less than a minute.\n\n4. Select "Local server" at the top of this window. Images that are already generated stay as they are; to draw one again, click it, choose "View" and press "Regenerate".\n\nSettings:\n- Runs on: the server chooses it on the first start: the graphics card if it finds an NVIDIA card with CUDA, otherwise the processor. Each has its own model file and image size: the processor needs minutes per image, so it gets 512 and Q4_K_M.\n- Video memory: "auto" picks by your card. If generation fails with "out of memory", choose a lower option and/or the Q4_K_M model file.\n- Image width and height: 768 is a good default, 1024 is the best quality, smaller is faster. Use multiples of 16.\n- Style is put before every description, e.g. "pencil sketch, " or "pixel art, ".\n\nProblems:\n- "uv" is not recognized: uv is not installed, or the game was started before installing it.\n- "NVIDIA GPU with CUDA not found": no NVIDIA card, or the driver is old: update the driver, or choose the processor in "Runs on".\n- "WinError 1114" about c10.dll: Windows has an old Microsoft Visual C++ runtime: install the new one from https://aka.ms/vs/17/release/vc_redist.x64.exe and start the server again.\n- "Cannot listen on ...": the server is already running, or the port is taken by another program: change the port.\n- Any other error is shown in the console window, it stays open when the server fails.\n\n"Open folder" opens the server folder: artai_config.json with these settings, artai.py (the server) and README.md with full documentation. The server can also be started by hand there with run.bat.</AiArtLocalInstructions>
+
+	<!-- mod settings -->
+	<AiArtSettingsShowGizmo>Show images of colonists and art</AiArtSettingsShowGizmo>
+	<AiArtSettingsDoubleSize>Double image size</AiArtSettingsDoubleSize>
+
+	<!-- server address and test -->
+	<AiArtServerUrl>Server address</AiArtServerUrl>
+	<AiArtServerTest>Test</AiArtServerTest>
+	<AiArtServerUrlHint>The mod sends requests to this address. The choice above fills it in; another address can be typed, e.g. a server on another computer.</AiArtServerUrlHint>
+	<AiArtTestRunning>Checking...</AiArtTestRunning>
+	<AiArtTestLocal>The local AI art server answers: {0}</AiArtTestLocal>
+	<AiArtTestAnswers>The server answers</AiArtTestAnswers>
+	<AiArtTestNoAnswer>No answer: {0}</AiArtTestNoAnswer>
+	<AiArtLocalPortTaken>not running: the port is used by another program</AiArtLocalPortTaken>
+	<AiArtLocalSettingsFile>Changes the file: {0}</AiArtLocalSettingsFile>
+	<AiArtLocalOpenAiPort>Text model API port (0: off)</AiArtLocalOpenAiPort>
+
+	<!-- what the local server reports; {0}, {1}... are filled by the server -->
+	<AiArtServerState_starting>starting</AiArtServerState_starting>
+	<AiArtServerState_checking>checking the model files ({0})</AiArtServerState_checking>
+	<AiArtServerState_offline>Hugging Face is unavailable, the downloaded model is used</AiArtServerState_offline>
+	<AiArtServerState_downloading>downloading the model: {0} / {1} GB ({2}%)</AiArtServerState_downloading>
+	<AiArtServerState_loading>loading the model into the graphics card (preset {0})</AiArtServerState_loading>
+	<AiArtServerState_ready>ready: {0}, preset {1}, {2}</AiArtServerState_ready>
+	<AiArtServerState_loading_cpu>loading the model into memory (processor)</AiArtServerState_loading_cpu>
+	<AiArtServerState_ready_cpu>ready: {0}, processor</AiArtServerState_ready_cpu>
+	<AiArtServerState_ready_mock>ready (mock: test images without a graphics card)</AiArtServerState_ready_mock>
+	<AiArtServerState_downloaded>the model is downloaded</AiArtServerState_downloaded>
+	<AiArtServerState_error>the model failed to load: {0}</AiArtServerState_error>
+
+	<!-- text model -->
+	<AiArtLlmTitle>Using the text LLM model</AiArtLlmTitle>
+	<AiArtLlmOff>The text model API is off: set its port in the local server settings above.</AiArtLlmOff>
+	<AiArtLlmText>While the local server is running, you can use its simple local model to generate text (Qwen3-4B, the text part of FLUX.2). It speaks the OpenAI API: just use the address below, for example in EchoColony and similar mods.</AiArtLlmText>
+	<AiArtLlmBaseUrl>Address</AiArtLlmBaseUrl>
+	<AiArtLlmChatUrl>Full chat address</AiArtLlmChatUrl>
+	<AiArtLlmModelName>Model name</AiArtLlmModelName>
+	<AiArtLlmNote>Most programs want the address, some ask for the full chat address. Any API key and model name are accepted. On another computer use the IP of this one instead of localhost (see "Running without the game"). Text answers and images share the graphics card: one waits while the other is generated.</AiArtLlmNote>
+	<AiArtCopy>Copy</AiArtCopy>
+	<AiArtCopied>Copied: {0}</AiArtCopied>
 </LanguageData>

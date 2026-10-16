@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using ArtAi.data;
+using ArtAi.util;
 using RimWorld.IO;
 using UnityEngine;
 using Verse;
@@ -70,7 +71,62 @@ namespace ArtAi
                 .FirstOrFallback();
         }
 
-        public static void SaveImage(byte[] data, Description description)
+        // Path of the image shown for the thing: the exact one, otherwise the last generated; null if none
+        public static string GetImagePath(Description description)
+        {
+            try
+            {
+                var thingDir = AbstractFilesystem.GetDirectory(RepoPath)
+                    .GetDirectory(description.ThingId);
+                if (!thingDir.Exists)
+                {
+                    return null;
+                }
+
+                VirtualFile file = GetExactFile(thingDir, description);
+                if (file == null || !file.Exists)
+                {
+                    file = GetLastModifiedFile(thingDir);
+                }
+                return file?.FullPath;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);
+                return null;
+            }
+        }
+
+        // Prompt the exact image was generated with, or null (older images have no prompt file)
+        public static string GetSavedPrompt(Description description)
+        {
+            try
+            {
+                var thingDir = AbstractFilesystem.GetDirectory(RepoPath)
+                    .GetDirectory(description.ThingId);
+                if (!thingDir.Exists)
+                {
+                    return null;
+                }
+
+                VirtualFile file = GetExactFile(thingDir, description);
+                if (file == null || !file.Exists)
+                {
+                    return null;
+                }
+
+                var promptPath = GetPromptPath(file.FullPath);
+                return File.Exists(promptPath) ? File.ReadAllText(promptPath) : null;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);
+                return null;
+            }
+        }
+
+        // Background thread: no Verse.Log here
+        public static void SaveImage(byte[] data, Description description, string prompt)
         {
             try
             {
@@ -82,15 +138,20 @@ namespace ArtAi
 
                 var imageFileName = GetImageFileName(description, dirPath);
                 var filePath = Path.Combine(dirPath, imageFileName);
-                if (!File.Exists(filePath))
-                {
-                    File.WriteAllBytes(filePath, data);
-                }
+                // overwrite: the player may regenerate the image
+                File.WriteAllBytes(filePath, data);
+                File.WriteAllText(GetPromptPath(filePath), prompt);
             }
             catch (Exception e)
             {
-                Log.Error(e.Message);
+                BgLog.Message("Cannot save image: " + e);
             }
+        }
+
+        // prompt is stored next to the image: <image name>.txt
+        private static string GetPromptPath(string imagePath)
+        {
+            return Path.ChangeExtension(imagePath, ".txt");
         }
 
         private static string GetImageFileName(Description description, string dirPath)

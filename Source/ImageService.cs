@@ -1,134 +1,145 @@
 using System;
-using System.Collections.Generic;
 using ArtAi.data;
-using JetBrains.Annotations;
+using ArtAi.Server;
 using UnityEngine;
 using Verse;
 using GenJob = ArtAi.AsyncGenerator.GenJob;
+using JobState = ArtAi.AsyncGenerator.JobState;
 
 namespace ArtAi
 {
-    public abstract class ImageService
+    public static class ImageService
     {
-        // user requested refresh of image by thing
-        private static readonly HashSet<string> ForcedRefresh = new HashSet<string>();
-
-        // store in progress generation requests to reduce load
-        private static readonly Dictionary<Description, CachedImage> InProgress
-            = new Dictionary<Description, CachedImage>();
-
-        // Get existing/inprogress image from disk/cache
+        // Image to show now: generating > exact > outdated > none. Cheap enough to call every frame.
         public static GeneratedImage Get(Description description)
         {
-            string thingId = description.ThingId;
-            GeneratedImage generatedImage = CachedImageRepo.GetExactImage(description);
-
-            bool forcedRefresh = ForcedRefresh.Contains(thingId);
-            if (forcedRefresh && generatedImage != null)
+            GenJob job = AsyncGenerator.Find(description);
+            if (job != null)
             {
-                ForcedRefresh.Remove(thingId);
-            }
-
-            if (generatedImage == null && !forcedRefresh)
-            {
-                generatedImage = CachedImageRepo.GetLastGeneratedImage(description);
-            }
-
-            if (generatedImage == null && InProgress.ContainsKey(description))
-            {
-                generatedImage = InProgress[description].Image;
-            }
-
-            return generatedImage ?? GeneratedImage.NeedGenerate();
-        }
-
-        // Get existing image or generate if none
-        public static GeneratedImage GetOrGenerate(Description description)
-        {
-            GeneratedImage generatedImage = Get(description);
-            switch (generatedImage.Status)
-            {
-                case GenerationStatus.Done:
-                case GenerationStatus.Outdated:
-                    return generatedImage;
-                case GenerationStatus.InProgress:
-                case GenerationStatus.NeedGenerate:
-                    return GetInProgress(description)
-                           ?? GenerateAndRefreshCaches(description);
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        [CanBeNull]
-        private static GeneratedImage GetInProgress(Description description)
-        {
-            if (InProgress.ContainsKey(description))
-            {
-                CachedImage inProgressImage = InProgress[description];
-                if (DateTime.Now < inProgressImage.ValidUntil)
+                switch (job.State)
                 {
-                    return inProgressImage.Image;
+                    case JobState.Done:
+                        // bytes already saved to disk by the worker, read them below
+                        AsyncGenerator.Remove(description);
+                        CachedImageRepo.ClearCache(description);
+                        break;
+                    case JobState.Error:
+                        return GeneratedImage.Error(CurrentTexture(description), job.ErrorMessage);
+                    default:
+                        return GeneratedImage.InProgress(CurrentTexture(description), InProgressMessage(job));
                 }
             }
 
-            return null;
+            return CachedImageRepo.GetExactImage(description)
+                   ?? CachedImageRepo.GetLastGeneratedImage(description)
+                   ?? GeneratedImage.NeedGenerate();
         }
 
-        private static GeneratedImage GenerateAndRefreshCaches(Description description)
+        // Like Get, but starts generation when the thing has no image yet
+        public static GeneratedImage GetOrGenerate(Description description)
         {
-            GenJob job = AsyncGenerator.GetOrStart(description);
-            switch (job.State)
+            GeneratedImage image = Get(description);
+            if (image.Status != GenerationStatus.NeedGenerate)
             {
-                case AsyncGenerator.JobState.Done:
-                    // bytes already saved to disk by the worker
-                    AsyncGenerator.Remove(description);
-                    ClearCache(description);
-                    // existing path: loads file and builds texture on the main thread
-                    return Get(description);
-                case AsyncGenerator.JobState.Error:
-                    AsyncGenerator.Remove(description);
-                    if (job.ErrorMessage != null)
-                    {
-                        Log.Error(job.ErrorMessage);
-                    }
-                    return GeneratedImage.Error();
-                default:
-                    // New / Enqueued -> still in progress
-                    var lastImage = CachedImageRepo.GetLastGeneratedImage(description);
-                    var inProgressImage = GeneratedImage.InProgress(
-                        lastImage?.Texture,
-                        QueuedMessage(job.QueuePosition >= 0 ? job.QueuePosition : (int?)null));
-                    InProgress[description] = new CachedImage(inProgressImage);
-                    return inProgressImage;
+                return image;
             }
+
+            Generate(description);
+            return Get(description);
         }
 
-        private static string QueuedMessage(int? queuePosition)
+        public static bool IsGenerating(Description description)
+        {
+            GenJob job = AsyncGenerator.Find(description);
+            return job != null && (job.State == JobState.New || job.State == JobState.Enqueued);
+        }
+
+        // Start generation of a new image. Does nothing while one is already generating.
+        // prompt: null = the one the current image was made with (it may be edited by the player),
+        // or, if there is none, built from the description; seed: null = the server picks it
+        public static void Generate(Description description, string prompt = null, int? seed = null)
+        {
+            if (IsGenerating(description)) return;
+            prompt = prompt
+                     ?? ImageRepo.GetSavedPrompt(description)
+                     ?? Generator.BuildPrompt(description);
+            AsyncGenerator.Start(description, prompt, seed);
+        }
+
+        // Repeat the failed generation with the same prompt and seed
+        public static void Retry(Description description)
+        {
+            GenJob job = AsyncGenerator.Find(description);
+            if (job == null || job.State != JobState.Error) return;
+            AsyncGenerator.Start(description, job.Prompt, job.Seed);
+        }
+
+        // One line for the image menu, e.g. "Status: 3 in queue, server is not available"
+        public static string StatusText(Description description)
+        {
+            string status;
+            GenJob job = AsyncGenerator.Find(description);
+            if (job != null && job.State == JobState.Error)
+            {
+                status = "AiArtStatusError".Translate() + ": " + job.ErrorMessage;
+            }
+            else if (job != null && job.State != JobState.Done)
+            {
+                status = job.QueuePosition > 0
+                    ? "AiArtStatusQueue".Translate(job.QueuePosition).ToString()
+                    : "AiArtStatusGenerating".Translate().ToString();
+                if (job.ServerStatus != null)
+                {
+                    status += ", " + job.ServerStatus.Text();
+                }
+            }
+            else
+            {
+                switch (Get(description).Status)
+                {
+                    case GenerationStatus.Done:
+                        status = "AiArtStatusDone".Translate();
+                        break;
+                    case GenerationStatus.Outdated:
+                        status = "AiArtStatusOutdated".Translate();
+                        break;
+                    default:
+                        status = "AiArtStatusNotGenerated".Translate();
+                        break;
+                }
+            }
+
+            status += ", " + ServerAvailability.Text();
+            return "AiArtStatus".Translate(status);
+        }
+
+        // previous image of the thing, shown while the new one is generating
+        private static Texture2D CurrentTexture(Description description)
+        {
+            return (CachedImageRepo.GetExactImage(description)
+                    ?? CachedImageRepo.GetLastGeneratedImage(description))
+                ?.Texture;
+        }
+
+        private static string InProgressMessage(GenJob job)
         {
             string result = "AiArtInProgress".Translate();
-            if (queuePosition != null)
+            if (job.QueuePosition >= 0)
             {
                 result = result
-                    + Environment.NewLine
-                    + Environment.NewLine
-                    + "AiArtQueuePosition".Translate()
-                    + queuePosition;
+                         + Environment.NewLine
+                         + Environment.NewLine
+                         + "AiArtQueuePosition".Translate()
+                         + job.QueuePosition;
+            }
+            if (job.ServerStatus != null)
+            {
+                result = result
+                         + Environment.NewLine
+                         + Environment.NewLine
+                         + job.ServerStatus.Text().CapitalizeFirst();
             }
             return result;
-        }
-
-        private static void ClearCache(Description description)
-        {
-            ForcedRefresh.Remove(description.ThingId);
-            InProgress.Remove(description);
-            CachedImageRepo.ClearCache(description);
-        }
-
-        public static GeneratedImage ForceRefresh(Description description)
-        {
-            ForcedRefresh.Add(description.ThingId);
-            return GetOrGenerate(description);
         }
     }
 }

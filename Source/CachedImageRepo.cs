@@ -59,8 +59,10 @@ namespace ArtAi
                     description.ArtDescription);
         }
 
+        // call when a new image for the thing was saved
         public static void ClearCache(Description description)
         {
+            GetExactImageCache.Remove(description);
             GetLastGeneratedImageCache.Remove(description.ThingId);
         }
     }

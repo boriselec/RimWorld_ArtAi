@@ -11,6 +11,18 @@ namespace ArtAi.data.comfyui
         [DataMember]
         public int? artAiQueuePosition { get; set; }
 
+        // Custom tag (local server): "error" means the generation failed
+        [DataMember]
+        public string artAiStatus { get; set; }
+
+        // Custom tag (local server): error text or why it takes long (e.g. model download progress), in English
+        [DataMember]
+        public string artAiMessage { get; set; }
+
+        // Custom tag (local server): values for the translated text of artAiStatus
+        [DataMember]
+        public List<string> artAiArgs { get; set; }
+
         [DataMember]
         public Dictionary<string, HistoryRsOutput> outputs { get; set; }
 

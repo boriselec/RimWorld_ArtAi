@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using ArtAi.data;
+using ArtAi.Server;
 using ArtAi.util;
 
 namespace ArtAi
@@ -20,15 +21,22 @@ namespace ArtAi
         public class GenJob
         {
             public readonly Description Description;
+            public readonly string Prompt;
+            // null: the server picks the seed
+            public readonly int? Seed;
             public volatile JobState State = JobState.New;
             public volatile string ErrorMessage;
             // queue position, or -1 when unknown
             public volatile int QueuePosition = -1;
+            // why it takes long (e.g. model download progress), if the server says
+            public volatile ServerStatus ServerStatus;
             public string RqUid;
 
-            public GenJob(Description description)
+            public GenJob(Description description, string prompt, int? seed)
             {
                 Description = description;
+                Prompt = prompt;
+                Seed = seed;
             }
         }
 
@@ -39,22 +47,26 @@ namespace ArtAi
             = new Dictionary<Description, GenJob>();
         private static bool _started;
 
-        // Main thread: return the existing job or start a new one. Never blocks.
-        public static GenJob GetOrStart(Description description)
+        // Main thread: the job for the description, or null
+        public static GenJob Find(Description description)
         {
             lock (Lock)
             {
-                if (!Jobs.TryGetValue(description, out var job))
-                {
-                    job = new GenJob(description);
-                    Jobs[description] = job;
-                }
-                EnsureWorker();
-                return job;
+                return Jobs.TryGetValue(description, out var job) ? job : null;
             }
         }
 
-        // Main thread: drop a job once its Done/Error result has been consumed.
+        // Main thread: start a new job, replacing a finished one. Never blocks.
+        public static void Start(Description description, string prompt, int? seed)
+        {
+            lock (Lock)
+            {
+                Jobs[description] = new GenJob(description, prompt, seed);
+                EnsureWorker();
+            }
+        }
+
+        // Main thread: drop a job once its Done result has been consumed.
         public static void Remove(Description description)
         {
             lock (Lock)
@@ -109,27 +121,35 @@ namespace ArtAi
                 switch (job.State)
                 {
                     case JobState.New:
-                        job.RqUid = Generator.Enqueue(job.Description);
+                        job.RqUid = Generator.Enqueue(
+                            job.Prompt, job.Description.Language, job.Seed);
                         job.State = JobState.Enqueued;
                         break;
                     case JobState.Enqueued:
-                        var (filename, queuePosition) = Generator.PollHistory(job.RqUid);
+                        var (filename, queuePosition, serverStatus) = Generator.PollHistory(job.RqUid);
                         if (filename != null)
                         {
                             var bytes = Generator.DownloadImage(filename);
-                            ImageRepo.SaveImage(bytes, job.Description);
+                            ImageRepo.SaveImage(bytes, job.Description, job.Prompt);
                             job.State = JobState.Done;
                         }
                         else
                         {
                             job.QueuePosition = queuePosition ?? -1;
+                            job.ServerStatus = serverStatus;
                         }
                         break;
+                    default:
+                        return;
                 }
+                ServerAvailability.Report(true);
             }
             catch (Exception e)
             {
-                job.ErrorMessage = e.ToString();
+                BgLog.Message("Generation failed: " + e);
+                // an HTTP error still means the server answered
+                ServerAvailability.Report(!(e is ServerUnavailableException));
+                job.ErrorMessage = e.Message;
                 job.State = JobState.Error;
             }
         }

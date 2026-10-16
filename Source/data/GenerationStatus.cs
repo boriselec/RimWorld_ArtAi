@@ -5,6 +5,7 @@ namespace ArtAi.data
         InProgress,
         Done,
         Outdated,
-        NeedGenerate
+        NeedGenerate,
+        Error
     }
 }
